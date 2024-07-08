@@ -1,0 +1,9 @@
+[
+    "Main.Module/Libraries.layer/utilities.lib",
+    "Main.Module/Libraries.layer/task-executor.lib",
+    "Main.Module/Libraries.layer/task-loaders.lib",
+    "Main.Module/Libraries.layer/repository-explorer.lib",
+    "Main.Module/Libraries.layer/dependency-graph-builder.lib",
+    "Main.Module/Libraries.layer/environment-handler.lib",
+    "Main.Module/Libraries.layer/execution-params-generator.lib"
+]
