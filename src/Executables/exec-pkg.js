@@ -11,13 +11,21 @@ const ExecutePlatformPackageCommandWrapped = ({
 	startupJsonFilePath,
 	platformParamsJsonFilePath,
 	nodejsProjectDependenciesPath,
-	awaitFirstConnectionWithLogStreaming
+	socketPath,
+	awaitFirstConnectionWithLogStreaming,
+	executableName,
+	commandLineArgs,
+	verbose,
  }) => ExecutePlatformPackageCommand({
 	packageRelativePath                   : packagePath,
 	startupJsonFileRelativePath           : startupJsonFilePath,
 	platformParamsJsonFileRelativePath    : platformParamsJsonFilePath,
 	nodejsProjectDependenciesRelativePath : nodejsProjectDependenciesPath,
-	awaitFirstConnectionWithLogStreaming
+	socketRelativePath	     			  : socketPath,
+	awaitFirstConnectionWithLogStreaming,
+	executableName,
+	commandLineArgs,
+	verbose
  })
 
 const argv = yargs(hideBin(process.argv))
@@ -42,6 +50,30 @@ const argv = yargs(hideBin(process.argv))
 		demandOption: true
 	})
 	.option('awaitFirstConnectionWithLogStreaming', {
+		describe: 'Aguardar pela primeira conexão com streaming de logs',
+		type: 'boolean',
+		default: false,
+		demandOption: false
+	})
+	.option('socketPath', {
+		describe: 'Caminho onde será criado o socket de comunicação do processo executor de pacotes',
+		type: 'string',
+		default: false,
+		demandOption: false
+	})
+	.option('executableName', {
+		describe: 'Nome do executável para pacote de linha dec comando',
+		type: 'string',
+		default: false,
+		demandOption: false
+	})
+	.option('commandLineArgs', {
+		describe: 'Argumentos para o executable de linha de comando',
+		type: 'string',
+		default: false,
+		demandOption: false
+	})
+	.option('verbose', {
 		describe: 'Aguardar pela primeira conexão com streaming de logs',
 		type: 'boolean',
 		default: false,

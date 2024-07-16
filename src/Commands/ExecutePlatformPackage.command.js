@@ -1,10 +1,10 @@
-const path = require("path")
+const { resolve } = require("path")
 const EventEmitter = require('events')
 
 const ExecutePackage                 = require("../Helpers/ExecutePackage")
 const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket")
 
-const CreatePrintDataLog = require("../Helpers/CreatePrintDataLog")
+const PrintDataLog = require("../Helpers/PrintDataLog")
 const ReadJsonFile       = require("../Helpers/ReadJsonFile")
 
 const DEPENDENCY_LIST = require("../Configs/dependencies.json")
@@ -14,58 +14,74 @@ const ExecutePlatformPackageCommand = async ({
     startupJsonFileRelativePath,
     platformParamsJsonFileRelativePath,
     nodejsProjectDependenciesRelativePath,
-    awaitFirstConnectionWithLogStreaming
+    socketRelativePath,
+    awaitFirstConnectionWithLogStreaming,
+    executableName,
+    commandLineArgs,
+    verbose
 }) => {
-    const packagePath                = path.resolve(process.cwd(), packageRelativePath)
-    const startupJsonFilePath        = path.resolve(process.cwd(), startupJsonFileRelativePath)
-    const platformParamsJsonFilePath = path.resolve(process.cwd(), platformParamsJsonFileRelativePath)
+
+    if(awaitFirstConnectionWithLogStreaming && !socketRelativePath)
+        throw "O parâmetro socketPath é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
+
+    currentWorkingDirectory = process.cwd()
+
+    const packagePath                = resolve(currentWorkingDirectory, packageRelativePath)
+    const startupJsonFilePath        = resolve(currentWorkingDirectory, startupJsonFileRelativePath)
+    const platformParamsJsonFilePath = resolve(currentWorkingDirectory, platformParamsJsonFileRelativePath)
+    const socketPath                 = socketRelativePath && resolve(currentWorkingDirectory, socketRelativePath)
 
     const platformParams = ReadJsonFile(platformParamsJsonFilePath)
-    const print = await CreatePrintDataLog(platformParams.ECO_DIRPATH_MAIN_REPO)
 
     const loggerEmitter = new EventEmitter()
-    loggerEmitter.on("log", (dataLog) => print(dataLog))
 
+    if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
+    
     process.env.EXTERNAL_NODE_MODULES_PATH = 
-        path.resolve(process.cwd(), nodejsProjectDependenciesRelativePath, "node_modules") 
-    
-    const { 
-        ECO_DIRPATH_MAIN_REPO, 
-        DAEMON_SOCKET_NAME,
-        ECO_DIRPATH_INSTALL_DATA
-     } = platformParams
+        resolve(currentWorkingDirectory, nodejsProjectDependenciesRelativePath, "node_modules")
 
-    const communicationInterface = 
-        await CreateBinaryInterfaceViaSocket({
-            socketPath: path.join(ECO_DIRPATH_INSTALL_DATA, "sockets", DAEMON_SOCKET_NAME),
-            ECO_DIRPATH_MAIN_REPO,
-            DEPENDENCY_LIST,
-            awaitFirstConnectionWithLogStreaming
-        })
-
-	loggerEmitter.on("log", (dataLog) => communicationInterface.SendLog(dataLog))
-    
     const startupParams  = ReadJsonFile(startupJsonFilePath)
 
-    const _Execute = async () => {
+    const _Execute = async (comInterface) => {
         await ExecutePackage({ 
             packagePath, 
+            commandLineArgs,
+            executableName,
             startupParams,
             platformParams,
             loggerEmitter,
-            onChangeTaskList: (taskList) => communicationInterface.UpdateTaskList(taskList),
+            onChangeTaskList: (taskList) => comInterface && comInterface.UpdateTaskList(taskList),
             DEPENDENCY_LIST
         })
-        communicationInterface.NotifyRunning()
+        comInterface && comInterface.NotifyRunning()
     }
 
-    if(!awaitFirstConnectionWithLogStreaming){
+    if(!socketPath){
        await _Execute()
     } else {
-        communicationInterface
-            .AddFirstRequestListener(async () => {
-                await _Execute()
+        const { 
+            ECO_DIRPATH_MAIN_REPO
+         } = platformParams
+
+        const communicationInterface = 
+            await CreateBinaryInterfaceViaSocket({
+                socketPath,
+                ECO_DIRPATH_MAIN_REPO,
+                DEPENDENCY_LIST,
+                awaitFirstConnectionWithLogStreaming
             })
+
+            loggerEmitter.on("log", (dataLog) => communicationInterface.SendLog(dataLog))
+
+            if(awaitFirstConnectionWithLogStreaming){
+                communicationInterface
+                .AddFirstRequestListener(async () => {
+                    await _Execute(communicationInterface)
+                })
+            } else {
+                await _Execute(communicationInterface)
+            }
+            
     }
 }
 

@@ -1,21 +1,21 @@
 {
   "name": "meta-platform-package-executor-command-line",
-  "version": "0.0.3",
+  "version": "0.0.6",
   "description": "Executor de Pacotes da Plataforma",
   "bin": {
     "pkg-exec": "./src/Executables/exec-pkg.js",
     "pkg-exec-dbg": "./src/ExecutablesDebug/exec-pkg-dbg.js"
   },
   "scripts": {
-    "build": "pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output package-executor-0.0.3-preview-linux-x64"
+    "build": "pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output package-executor-0.0.6-preview-linux-x64"
   },
   "author": "kadisk.shark@gmail.com",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "@grpc/grpc-js": "^1.10.10",
+    "@grpc/proto-loader": "^0.7.13",
     "colors": "^1.4.0",
     "pkg": "^5.8.1",
-    "yargs": "^17.7.2",
-    "@grpc/grpc-js": "^1.10.10",
-    "@grpc/proto-loader": "^0.7.13"
+    "yargs": "^17.7.2"
   }
 }

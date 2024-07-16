@@ -1,24 +1,24 @@
 syntax = "proto3";
 
-package DaemonControlCenter;
+package PackageExecutorRPCSpec;
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/wrappers.proto";
 
-service DaemonControlCenterService {
+service PackageExecutorRPCService {
   rpc Kill(google.protobuf.Empty) returns (google.protobuf.Empty) {}
-  rpc GetStatus(google.protobuf.Empty) returns (DaemonStatusResponse) {}
+  rpc GetStatus(google.protobuf.Empty) returns (ExecutionStatusResponse) {}
   rpc ListTasks(google.protobuf.Empty) returns (TaskListResponse) {}
   rpc GetTask(TaskRequest) returns (TaskInformation) {}
   rpc LogStreaming(google.protobuf.Empty) returns (stream LogResponse) {}
   rpc StatusChangeNotification(google.protobuf.Empty)
-      returns (stream DaemonStatusResponse) {}
+      returns (stream ExecutionStatusResponse) {}
 }
 
 message EventResponse { string event_message = 1; }
 
-enum DaemonStatus {
+enum ExecutionStatus {
   UNKNOWN = 0;
   WAITING_FOR_FIRST_CONNECTION = 1;
   STARTING = 2;
@@ -38,7 +38,7 @@ enum TaskStatus {
   TERMINATED = 9;
 }
 
-message DaemonStatusResponse { DaemonStatus status = 1; }
+message ExecutionStatusResponse { ExecutionStatus status = 1; }
 
 message TaskListResponse { repeated Task tasksList = 1; }
 

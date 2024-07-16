@@ -8,6 +8,7 @@ const CreateTaskExecutorMachine = (ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST) => {
         'install-nodejs-package-dependencies' : RequirePlatformScript("task-loaders.lib/src/TaskLoaders/InstallNodejsPackageDependencies.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
         'nodejs-package'                      : RequirePlatformScript("task-loaders.lib/src/TaskLoaders/NodeJSPackage.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
         'application-instance'                : RequirePlatformScript("task-loaders.lib/src/TaskLoaders/ApplicationInstance.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
+        'command-application'                 : RequirePlatformScript("task-loaders.lib/src/TaskLoaders/CommandApplication.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
         'service-instance'                    : RequirePlatformScript("task-loaders.lib/src/TaskLoaders/ServiceInstance.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
         'endpoint-instance'                   : RequirePlatformScript("task-loaders.lib/src/TaskLoaders/EndpointInstance.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
     }

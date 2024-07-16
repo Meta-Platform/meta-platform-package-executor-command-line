@@ -10,7 +10,7 @@ const ConvertObjectToProtoStruct = require("./ConvertObjectToProtoStruct")
 
 const FIRST_CONNECTION_EVENT = Symbol()
 const LOG_EVENT = Symbol()
-const DAEMON_STATUS_EVENT = Symbol()
+const EXECUTION_STATUS_EVENT = Symbol()
 
 
 
@@ -45,9 +45,9 @@ const CreateBinaryInterfaceViaSocket = async ({
 	awaitFirstConnectionWithLogStreaming=false
 }) => {
 
-	const PROTO_PATH = path.join(__dirname, "./IDL/DaemonControlCenter.proto")
+	const PROTO_PATH = path.join(__dirname, "./IDL/PackageExecutorRPCSpec.proto")
 
-	const DaemonControlCenterPackageDefinition = protoLoader
+	const PackageExecutorRPCSDefinition = protoLoader
 	.loadSync(PROTO_PATH, {
 		keepCase: true,
 		longs: String,
@@ -56,7 +56,8 @@ const CreateBinaryInterfaceViaSocket = async ({
 		oneofs: true,
 	})
 	
-	const DaemonControlCenterGrpcObject = grpc.loadPackageDefinition(DaemonControlCenterPackageDefinition)
+	const PackageExecutorGrpcObject = grpc
+		.loadPackageDefinition(PackageExecutorRPCSDefinition)
 
 	const FormatTaskForOutput = RequirePlatformScript("utilities.lib/src/FormatTaskForOutput", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
 	const GetTaskInformation = RequirePlatformScript("utilities.lib/src/GetTaskInformation", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
@@ -66,10 +67,9 @@ const CreateBinaryInterfaceViaSocket = async ({
 	let error = undefined
 	let taskList = []
 	const server = new grpc.Server()
-	const DaemonControlCenterServiceDefinition = DaemonControlCenterGrpcObject.DaemonControlCenter.DaemonControlCenterService.service
+	const PackageExecutorRPCService = PackageExecutorGrpcObject.PackageExecutorRPCSpec.PackageExecutorRPCService.service
 	const eventEmitter = new EventEmitter()
 	SetupSocketFileRemovalOnShutdown(socketPath)
-
 
 	const GetStatus = (call, callback) => callback(null, { status })
 
@@ -121,14 +121,14 @@ const CreateBinaryInterfaceViaSocket = async ({
 
 	const StatusChangeNotification = (call) => {
 		const Handle = status => call.write({ status })
-		eventEmitter.on(DAEMON_STATUS_EVENT, Handle)
+		eventEmitter.on(EXECUTION_STATUS_EVENT, Handle)
 		call.on('end', () => {
             call.end()
-			eventEmitter.removeListener(DAEMON_STATUS_EVENT, Handle)
+			eventEmitter.removeListener(EXECUTION_STATUS_EVENT, Handle)
         })
 	}
 
-	server.addService(DaemonControlCenterServiceDefinition,
+	server.addService(PackageExecutorRPCService,
 		{
 			Kill: KillProcess,
 			GetStatus,
@@ -151,7 +151,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const ChangeStatus = (_status, err) => {
 		status = _status
 		error = err
-		eventEmitter.emit(DAEMON_STATUS_EVENT, status)
+		eventEmitter.emit(EXECUTION_STATUS_EVENT, status)
 	}
 
 	const NotifyRunning = () => ChangeStatus("RUNNING")

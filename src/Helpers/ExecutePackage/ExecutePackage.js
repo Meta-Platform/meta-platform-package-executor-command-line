@@ -12,6 +12,8 @@ const GenerateEnvironmentName = require("./GenerateEnvironmentName")
 
 const ExecutePackage = async ({ 
     packagePath, 
+    commandLineArgs,
+    executableName,
     startupParams, 
     loggerEmitter,
     onChangeTaskList,
@@ -104,13 +106,14 @@ const ExecutePackage = async ({
             const applicationExecutionParams = await GetApplicationExecutionParams({
                 environmentPath,
                 metadataHierarchy,
+                commandLineArgs,
+                executableName,
                 ENVIRONMENT_CONF_DIRNAME_DEPENDENCIES,
                 ECO_DIRPATH_MAIN_REPO,
                 DEPENDENCY_LIST
             })
     
             const startupTaskExecutorMachine = CreateTaskExecutorMachine(ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-    
     
             const GetFormattedMessage = (taskId, status, objectLoaderType) => {
                 return `[${taskId}] [${objectLoaderType}] ${colors[GetColorLogByStatus(status)](status)}`
@@ -131,7 +134,6 @@ const ExecutePackage = async ({
                 } else {
                     reject()
                 }
-                
             }
     
             const DebouncedCheckIfThePackageIsWorking = CreateDebounce(CheckIfThePackageIsWorking, 2000)
