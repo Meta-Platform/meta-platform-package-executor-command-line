@@ -8,7 +8,7 @@ const GetApplicationExecutionParams = async ({
     metadataHierarchy,
     commandLineArgs,
     executableName,
-    ENVIRONMENT_CONF_DIRNAME_DEPENDENCIES,
+    EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
     ECO_DIRPATH_MAIN_REPO,
     DEPENDENCY_LIST
 }) => {
@@ -26,7 +26,7 @@ const GetApplicationExecutionParams = async ({
         environmentPath,
         commandLineArgs,
         executableName,
-        ENVIRONMENT_CONF_DIRNAME_DEPENDENCIES
+        EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES
     })
 
     await WriteObjectToFile(join(environmentPath, "execution-params.json"), applicationExecutionParams)

@@ -32,9 +32,9 @@ const ExecutePackage = async ({
                 REPOS_CONF_EXT_GROUP_DIR,
                 REPOS_CONF_EXTLIST_PKG_TYPE,
                 PKG_CONF_DIRNAME_METADATA,
-                ENVIRONMENT_CONF_DIRNAME_EXECUTION_DATA,
-                ENVIRONMENT_CONF_DIRNAME_DEPENDENCIES,
-                ENVIRONMENT_CONF_FILENAME_PKG_GRAPH_DATA
+                ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR,
+                EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
+                ECOSYSTEMDATA_CONF_FILENAME_PKG_GRAPH_DATA
             } = platformParams
 
             const WriteObjectToFile = 
@@ -87,7 +87,7 @@ const ExecutePackage = async ({
             const packageName     = ConvertNamespaceToPackageName(namespace)
             const environmentName = GenerateEnvironmentName(packageName, packagePath)
 
-            const localPath = join(ECO_DIRPATH_INSTALL_DATA, ENVIRONMENT_CONF_DIRNAME_EXECUTION_DATA)
+            const localPath = join(ECO_DIRPATH_INSTALL_DATA, ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR)
     
             const environmentPath = await CreateEnvironment({
                 environmentName, 
@@ -97,18 +97,18 @@ const ExecutePackage = async ({
         
             await PrepareDataDir({
                 environmentPath, 
-                ENVIRONMENT_CONF_DIRNAME_DEPENDENCIES, 
+                EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES, 
                 loggerEmitter
             })
     
-            await WriteObjectToFile(join(environmentPath, ENVIRONMENT_CONF_FILENAME_PKG_GRAPH_DATA), metadataHierarchy)
+            await WriteObjectToFile(join(environmentPath, ECOSYSTEMDATA_CONF_FILENAME_PKG_GRAPH_DATA), metadataHierarchy)
     
             const applicationExecutionParams = await GetApplicationExecutionParams({
                 environmentPath,
                 metadataHierarchy,
                 commandLineArgs,
                 executableName,
-                ENVIRONMENT_CONF_DIRNAME_DEPENDENCIES,
+                EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
                 ECO_DIRPATH_MAIN_REPO,
                 DEPENDENCY_LIST
             })

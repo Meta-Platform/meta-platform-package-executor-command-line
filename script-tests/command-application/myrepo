@@ -1,0 +1,7 @@
+#!/bin/bash
+
+PACKAGE_REPO_PATH="/Main.Module/Application.layer/repository-manager.cli"
+EXEC_NAME="myrepo"
+SOCKET_PATH="./myrepo.sock"
+
+source run-command-line.sh "$@"
