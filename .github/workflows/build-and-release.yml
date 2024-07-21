@@ -16,9 +16,10 @@ jobs:
         node-version: [18.x]
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Fetch all history for all tags and branches
+          fetch-depth: 0  # Important for tags
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -54,23 +55,26 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0
+          fetch-depth: 0  # Important for tags
 
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: binary
 
-      - name: Setup Git Tag
+      - name: Create or set tag
         run: |
-          git fetch --tags
-          git tag -fa ${{ env.VERSION }} -m "Update tag ${{ env.VERSION }}"
-          git push origin ${{ env.VERSION }} --force
+          if ! git fetch --tags && git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
+            echo "Tag ${{ env.VERSION }} already exists."
+          else
+            git tag -a ${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
+            git push origin ${{ env.VERSION }}
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
+          files: ${{ github.workspace }}/${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
           tag_name: ${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
