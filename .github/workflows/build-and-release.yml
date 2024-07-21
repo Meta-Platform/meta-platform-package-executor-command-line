@@ -14,21 +14,20 @@ jobs:
     strategy:
       matrix:
         node-version: [18.x]
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Important for tags
+          fetch-depth: 0
 
       - name: Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Install PKG globally
         run: npm install -g pkg
@@ -43,9 +42,9 @@ jobs:
           pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          name: binary
+          name: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
           path: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
 
   release:
@@ -53,22 +52,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # Important for tags
+          fetch-depth: 0
 
       - name: Download artifact
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
-          name: binary
+          name: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
 
       - name: Create or set tag
         run: |
-          if ! git fetch --tags && git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
-            echo "Tag ${{ env.VERSION }} already exists."
-          else
+          git fetch --tags
+          if ! git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
             git tag -a ${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
             git push origin ${{ env.VERSION }}
+          else
+            echo "Tag ${{ env.VERSION }} already exists."
           fi
 
       - name: Create Release
