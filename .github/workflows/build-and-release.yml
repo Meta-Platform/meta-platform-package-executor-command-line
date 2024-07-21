@@ -77,6 +77,8 @@ jobs:
             git push origin ${{ env.VERSION }}
           else
             echo "Tag ${{ env.VERSION }} already exists."
+          fi
+        
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
