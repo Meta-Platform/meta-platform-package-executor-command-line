@@ -19,28 +19,31 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-
       - name: Install dependencies
         run: npm ci
-
       - name: Install PKG globally
         run: npm install -g pkg
-
       - name: Get version and name
         run: |
           echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
           echo "NAME=$(node -p "require('./package.json').name")" >> $GITHUB_ENV
-
+      - name: Export version and name to file
+        run: |
+          echo "VERSION=${{ env.VERSION }}" > env_vars.txt
+          echo "NAME=${{ env.NAME }}" >> env_vars.txt
+      - name: Upload environment variables
+        uses: actions/upload-artifact@v3
+        with:
+          name: env_vars
+          path: env_vars.txt
       - name: Build binary with pkg
         run: |
           pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
@@ -55,12 +58,17 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
+      - name: Download environment variables
+        uses: actions/download-artifact@v3
+        with:
+          name: env_vars
+      - name: Import environment variables
+        run: |
+          echo "$(cat env_vars.txt)" >> $GITHUB_ENV
       - name: Download artifact
         uses: actions/download-artifact@v3
         with:
           name: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
-
       - name: Create or set tag
         run: |
           git fetch --tags
@@ -69,8 +77,6 @@ jobs:
             git push origin ${{ env.VERSION }}
           else
             echo "Tag ${{ env.VERSION }} already exists."
-          fi
-
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
