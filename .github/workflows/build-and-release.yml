@@ -1,0 +1,57 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Get version and name
+        id: package_info
+        run: |
+          echo "::set-output name=VERSION::$(node -p "require('./package.json').version")"
+          echo "::set-output name=NAME::$(node -p "require('./package.json').name")"
+
+      - name: Run build
+        run: npm run build
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.package_info.outputs.NAME }}-${{ steps.package_info.outputs.VERSION }}-preview-linux-x64.zip
+          path: path/to/your/binary-${{ steps.package_info.outputs.VERSION }}-preview-linux-x64.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ needs.build.outputs.NAME }}-${{ needs.build.outputs.VERSION }}-preview-linux-x64.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ needs.build.outputs.NAME }}-${{ needs.build.outputs.VERSION }}-preview-linux-x64.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
