@@ -51,12 +51,17 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
       - name: Download artifact
         uses: actions/download-artifact@v2
         with:
           name: binary
 
-      - name: Create or update tag
+      - name: Setup Git Tag
         run: |
           git fetch --tags
           git tag -fa ${{ env.VERSION }} -m "Update tag ${{ env.VERSION }}"
