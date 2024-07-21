@@ -17,6 +17,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0  # Fetch all history for all tags and branches
+
       - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -53,17 +56,16 @@ jobs:
         with:
           name: binary
 
-      - name: Create or set tag
+      - name: Create or update tag
         run: |
-          if ! git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
-            git tag ${{ env.VERSION }}
-            git push origin ${{ env.VERSION }}
-          fi
+          git fetch --tags
+          git tag -fa ${{ env.VERSION }} -m "Update tag ${{ env.VERSION }}"
+          git push origin ${{ env.VERSION }} --force
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ github.workspace }}/${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
+          files: ./${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
           tag_name: ${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
