@@ -53,9 +53,17 @@ jobs:
         with:
           name: binary
 
+      - name: Create or set tag
+        run: |
+          if ! git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
+            git tag ${{ env.VERSION }}
+            git push origin ${{ env.VERSION }}
+          fi
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ github.workspace }}/${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
+          tag_name: ${{ env.VERSION }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
