@@ -1,4 +1,7 @@
 [
+    "Main.Module/Libraries.layer/json-file-utilities.lib",
+    "Main.Module/Libraries.layer/resolve-package-name.lib",
+    "Main.Module/Libraries.layer/metadata-hierarchy-handler.lib",
     "Main.Module/Libraries.layer/utilities.lib",
     "Main.Module/Libraries.layer/task-executor.lib",
     "Main.Module/Libraries.layer/task-loaders.lib",

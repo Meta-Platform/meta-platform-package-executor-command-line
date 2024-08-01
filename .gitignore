@@ -1,5 +1,2 @@
 node_modules
-
-test-local.sh
-test-bin.sh
-package-executor-0.0.3-preview-linux-x64
+meta-platform-package-executor-command-line-*

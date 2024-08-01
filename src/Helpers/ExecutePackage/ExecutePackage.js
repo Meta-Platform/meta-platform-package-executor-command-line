@@ -38,11 +38,11 @@ const ExecutePackage = async ({
             } = platformParams
 
             const WriteObjectToFile = 
-                RequirePlatformScript("utilities.lib/src/WriteObjectToFile", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const ConvertNamespaceToPackageName = 
-                RequirePlatformScript("utilities.lib/src/ConvertNamespaceToPackageName", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const ExtractRootDependency = 
-                RequirePlatformScript("utilities.lib/src/ExtractRootDependency", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+                RequirePlatformScript("json-file-utilities.lib/src/WriteObjectToFile", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+            const ResolvePackageName = 
+                RequirePlatformScript("resolve-package-name.lib/src/ResolvePackageName", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+            const GetMetadataRootNode = 
+                RequirePlatformScript("metadata-hierarchy-handler.lib/src/GetMetadataRootNode", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
             const TaskStatusTypes = 
                 RequirePlatformScript("task-executor.lib/src/TaskStatusTypes", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
             const ListPackages = 
@@ -55,7 +55,7 @@ const ExecutePackage = async ({
                 RequirePlatformScript("environment-handler.lib/src/PrepareDataDir", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
                 
             const GetRootNamespace = (metadataHierarchy) => {
-                const dependency = ExtractRootDependency(metadataHierarchy)
+                const dependency = GetMetadataRootNode(metadataHierarchy)
                 const { 
                     metadata:{
                         package:{
@@ -84,7 +84,7 @@ const ExecutePackage = async ({
             })
         
             const namespace       = GetRootNamespace(metadataHierarchy)
-            const packageName     = ConvertNamespaceToPackageName(namespace)
+            const packageName     = ResolvePackageName(namespace)
             const environmentName = GenerateEnvironmentName(packageName, packagePath)
 
             const localPath = join(ECO_DIRPATH_INSTALL_DATA, ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR)

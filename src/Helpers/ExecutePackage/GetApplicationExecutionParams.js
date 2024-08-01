@@ -18,7 +18,7 @@ const GetApplicationExecutionParams = async ({
         WriteObjectToFile
     ] = [
         RequirePlatformScript("execution-params-generator.lib/src/TranslateMetadataHierarchyForExecutionParams", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        RequirePlatformScript("utilities.lib/src/WriteObjectToFile", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+        RequirePlatformScript("json-file-utilities.lib/src/WriteObjectToFile", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
     ]
 
     const applicationExecutionParams = TranslateMetadataHierarchyForExecutionParams({
