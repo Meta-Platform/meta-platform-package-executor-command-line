@@ -18,11 +18,11 @@ const GetLayerURI = (packageName, DEPENDENCY_LIST) => {
     
 }
 
-const RequirePlatformScript = (fileURI, ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST) => {
+const CreateRequireScript = (fileURI, ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST) => {
     const packageName = GetPackageName(fileURI)
     const layerURI = GetLayerURI(packageName, DEPENDENCY_LIST)
     const filePath = resolve(ECO_DIRPATH_MAIN_REPO, layerURI, fileURI)
     return require(filePath)
 }
 
-module.exports = RequirePlatformScript
+module.exports = CreateRequireScript
