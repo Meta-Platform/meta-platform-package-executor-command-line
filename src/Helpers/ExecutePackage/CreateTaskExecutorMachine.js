@@ -1,8 +1,16 @@
 
 const CreateRequireScript = require("../CreateRequireScript")
 
-const CreateTaskExecutorMachine = (ecosystemData, DEPENDENCY_LIST) => {
-    const RequireScript = CreateRequireScript(ecosystemData, DEPENDENCY_LIST)
+const CreateTaskExecutorMachine = ({
+    ecosystemData, 
+    DEPENDENCY_LIST, 
+    ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
+}) => {
+    const RequireScript = CreateRequireScript({
+        ecosystemData, 
+        DEPENDENCY_LIST, 
+        ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
+    })
     const TaskExecutor = RequireScript("task-executor.lib/src/TaskExecutor") 
     const taskLoaders = {
         'install-nodejs-package-dependencies' : RequireScript("install-nodejs-package-dependencies.lib/src/InstallNodejsPackageDependencies.taskLoader"),

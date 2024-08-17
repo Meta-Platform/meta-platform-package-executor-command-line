@@ -112,7 +112,11 @@ const ExecutePackage = async ({
                 DEPENDENCY_LIST
             })
     
-            const startupTaskExecutorMachine = CreateTaskExecutorMachine(ecosystemData, DEPENDENCY_LIST)
+            const startupTaskExecutorMachine = CreateTaskExecutorMachine({
+                ecosystemData, 
+                DEPENDENCY_LIST, 
+                ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
+            })
     
             const GetFormattedMessage = (taskId, status, objectLoaderType) => {
                 return `[${taskId}] [${objectLoaderType}] ${colors[GetColorLogByStatus(status)](status)}`
