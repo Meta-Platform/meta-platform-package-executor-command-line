@@ -1,6 +1,6 @@
 const { join } = require("path")
 
-const RequirePlatformScript = require("../RequirePlatformScript")
+const CreateRequireScript = require("../CreateRequireScript")
 
 
 const GetApplicationExecutionParams = async ({
@@ -9,16 +9,18 @@ const GetApplicationExecutionParams = async ({
     commandLineArgs,
     executableName,
     EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
-    ECO_DIRPATH_MAIN_REPO,
+    ecosystemData,
     DEPENDENCY_LIST
 }) => {
     
+    const RequireScript = CreateRequireScript(ecosystemData, DEPENDENCY_LIST)
+
     const [
         TranslateMetadataHierarchyForExecutionParams, 
         WriteObjectToFile
     ] = [
-        RequirePlatformScript("execution-params-generator.lib/src/TranslateMetadataHierarchyForExecutionParams", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        RequirePlatformScript("json-file-utilities.lib/src/WriteObjectToFile", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+        RequireScript("execution-params-generator.lib/src/TranslateMetadataHierarchyForExecutionParams"),
+        RequireScript("json-file-utilities.lib/src/WriteObjectToFile")
     ]
 
     const applicationExecutionParams = TranslateMetadataHierarchyForExecutionParams({

@@ -6,30 +6,8 @@ const { hideBin } = require('yargs/helpers')
 
 const ExecutePlatformPackageCommand = require("../Commands/ExecutePlatformPackage.command")
 
-const ExecutePlatformPackageCommandWrapped = ({ 
-	packagePath,
-	startupJsonFilePath,
-	platformParamsJsonFilePath,
-	nodejsProjectDependenciesPath,
-	socketPath,
-	awaitFirstConnectionWithLogStreaming,
-	executableName,
-	commandLineArgs,
-	verbose,
- }) => ExecutePlatformPackageCommand({
-	packageRelativePath                   : packagePath,
-	startupJsonFileRelativePath           : startupJsonFilePath,
-	platformParamsJsonFileRelativePath    : platformParamsJsonFilePath,
-	nodejsProjectDependenciesRelativePath : nodejsProjectDependenciesPath,
-	socketRelativePath	     			  : socketPath,
-	awaitFirstConnectionWithLogStreaming,
-	executableName,
-	commandLineArgs,
-	verbose
- })
-
 const argv = yargs(hideBin(process.argv))
-	.option('packagePath', {
+	.option('package', {
 		describe: 'Caminho do pacote',
 		type: 'string',
 		demandOption: true
@@ -39,12 +17,17 @@ const argv = yargs(hideBin(process.argv))
 		type: 'string',
 		demandOption: true
 	})
-	.option('platformParamsJsonFilePath', {
+	.option('ecosystemData', {
+		describe: 'Caminho do diretório EcosystemData válido',
+		type: 'string',
+		demandOption: true
+	})
+	.option('ecosystemDefault', {
 		describe: 'Caminho do arquivo JSON de parâmetros da plataforma',
 		type: 'string',
 		demandOption: true
 	})
-	.option('nodejsProjectDependenciesPath', {
+	.option('nodejsProjectDependencies', {
 		describe: 'Caminho do projeto com as dependências nodejs para execução do pacote do ecossistema',
 		type: 'string',
 		demandOption: true
@@ -55,7 +38,7 @@ const argv = yargs(hideBin(process.argv))
 		default: false,
 		demandOption: false
 	})
-	.option('socketPath', {
+	.option('socket', {
 		describe: 'Caminho onde será criado o socket de comunicação do processo executor de pacotes',
 		type: 'string',
 		default: false,
@@ -83,4 +66,4 @@ const argv = yargs(hideBin(process.argv))
 	.alias('help', 'h')
 	.argv
 
-ExecutePlatformPackageCommandWrapped(argv)
+ExecutePlatformPackageCommand(argv)

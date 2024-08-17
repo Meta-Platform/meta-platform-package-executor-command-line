@@ -18,11 +18,15 @@ const GetLayerURI = (packageName, DEPENDENCY_LIST) => {
     
 }
 
-const CreateRequireScript = (fileURI, ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST) => {
-    const packageName = GetPackageName(fileURI)
-    const layerURI = GetLayerURI(packageName, DEPENDENCY_LIST)
-    const filePath = resolve(ECO_DIRPATH_MAIN_REPO, layerURI, fileURI)
-    return require(filePath)
+const CreateRequireScript = (ecosystemData, DEPENDENCY_LIST) => {
+    
+
+    return (fileURI) => {
+        const packageName = GetPackageName(fileURI)
+        const layerURI = GetLayerURI(packageName, DEPENDENCY_LIST)
+        const filePath = resolve(ecosystemData, layerURI, fileURI)
+        return require(filePath)
+    }
 }
 
 module.exports = CreateRequireScript

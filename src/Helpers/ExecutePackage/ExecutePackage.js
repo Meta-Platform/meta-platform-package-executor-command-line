@@ -3,7 +3,7 @@ const colors = require('colors')
 
 const GetColorLogByStatus = require("./GetColorLogByStatus")
 
-const RequirePlatformScript = require("../RequirePlatformScript")
+const CreateRequireScript = require("../CreateRequireScript")
 
 const CreateTaskExecutorMachine = require("./CreateTaskExecutorMachine")
 const GetApplicationExecutionParams = require("./GetApplicationExecutionParams")
@@ -14,18 +14,17 @@ const ExecutePackage = async ({
     packagePath, 
     commandLineArgs,
     executableName,
-    startupParams, 
+    startupParams,
+    ecosystemData,
     loggerEmitter,
     onChangeTaskList,
-    platformParams,
+    ecosystemDefaultParams,
     DEPENDENCY_LIST
 }) => 
     new Promise(async (resolve, reject) => {
         try{
 
             const {
-                ECO_DIRPATH_MAIN_REPO,
-                ECO_DIRPATH_INSTALL_DATA,
                 REPOS_CONF_FILENAME_REPOS_DATA,
                 REPOS_CONF_EXT_MODULE_DIR,
                 REPOS_CONF_EXT_LAYER_DIR,
@@ -35,24 +34,18 @@ const ExecutePackage = async ({
                 ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR,
                 EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
                 ECOSYSTEMDATA_CONF_FILENAME_PKG_GRAPH_DATA
-            } = platformParams
+            } = ecosystemDefaultParams
 
-            const WriteObjectToFile = 
-                RequirePlatformScript("json-file-utilities.lib/src/WriteObjectToFile", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const ResolvePackageName = 
-                RequirePlatformScript("resolve-package-name.lib/src/ResolvePackageName", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const GetMetadataRootNode = 
-                RequirePlatformScript("metadata-hierarchy-handler.lib/src/GetMetadataRootNode", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const TaskStatusTypes = 
-                RequirePlatformScript("task-executor.lib/src/TaskStatusTypes", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const ListPackages = 
-                RequirePlatformScript("repository-explorer.lib/src/ListPackages", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const BuildMetadataHierarchy = 
-                RequirePlatformScript("dependency-graph-builder.lib/src/BuildMetadataHierarchy", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const CreateEnvironment = 
-                RequirePlatformScript("environment-handler.lib/src/CreateEnvironment", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-            const PrepareDataDir = 
-                RequirePlatformScript("environment-handler.lib/src/PrepareDataDir", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+            const RequireScript = CreateRequireScript(ecosystemData, DEPENDENCY_LIST)
+
+            const WriteObjectToFile      = RequireScript("json-file-utilities.lib/src/WriteObjectToFile")
+            const ResolvePackageName     = RequireScript("resolve-package-name.lib/src/ResolvePackageName")
+            const GetMetadataRootNode    = RequireScript("metadata-hierarchy-handler.lib/src/GetMetadataRootNode")
+            const TaskStatusTypes        = RequireScript("task-executor.lib/src/TaskStatusTypes")
+            const ListPackages           = RequireScript("repository-utilities.lib/src/ListPackages")
+            const BuildMetadataHierarchy = RequireScript("dependency-graph-builder.lib/src/BuildMetadataHierarchy")
+            const CreateEnvironment      = RequireScript("environment-handler.lib/src/CreateEnvironment")
+            const PrepareDataDir         = RequireScript("environment-handler.lib/src/PrepareDataDir")
                 
             const GetRootNamespace = (metadataHierarchy) => {
                 const dependency = GetMetadataRootNode(metadataHierarchy)
@@ -109,11 +102,11 @@ const ExecutePackage = async ({
                 commandLineArgs,
                 executableName,
                 EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
-                ECO_DIRPATH_MAIN_REPO,
+                ecosystemData,
                 DEPENDENCY_LIST
             })
     
-            const startupTaskExecutorMachine = CreateTaskExecutorMachine(ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+            const startupTaskExecutorMachine = CreateTaskExecutorMachine(ecosystemData, DEPENDENCY_LIST)
     
             const GetFormattedMessage = (taskId, status, objectLoaderType) => {
                 return `[${taskId}] [${objectLoaderType}] ${colors[GetColorLogByStatus(status)](status)}`

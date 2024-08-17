@@ -3,7 +3,7 @@ const grpc = require('@grpc/grpc-js')
 const protoLoader = require('@grpc/proto-loader')
 const path = require("path")
 
-const RequirePlatformScript = require("../RequirePlatformScript")
+const CreateRequireScript = require("../CreateRequireScript")
 
 const SetupSocketFileRemovalOnShutdown = require("./SetupSocketFileRemovalOnShutdown")
 const ConvertObjectToProtoStruct = require("./ConvertObjectToProtoStruct")
@@ -11,8 +11,6 @@ const ConvertObjectToProtoStruct = require("./ConvertObjectToProtoStruct")
 const FIRST_CONNECTION_EVENT = Symbol()
 const LOG_EVENT = Symbol()
 const EXECUTION_STATUS_EVENT = Symbol()
-
-
 
 const GetAgentLinkRulesResponse = (agentLinkRules) => {
 	return agentLinkRules.map( rule => {
@@ -39,8 +37,8 @@ const KillProcess = () => process.exit()
 
 
 const CreateBinaryInterfaceViaSocket = async ({
-	socketPath,
-	ECO_DIRPATH_MAIN_REPO,
+	socket,
+	ecosystemData,
 	DEPENDENCY_LIST,
 	awaitFirstConnectionWithLogStreaming=false
 }) => {
@@ -59,8 +57,10 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const PackageExecutorGrpcObject = grpc
 		.loadPackageDefinition(PackageExecutorRPCSDefinition)
 
-	const FormatTaskForOutput = RequirePlatformScript("utilities.lib/src/FormatTaskForOutput", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
-	const GetTaskInformation = RequirePlatformScript("utilities.lib/src/GetTaskInformation", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+	const RequireScript = CreateRequireScript()
+
+	const FormatTaskForOutput = RequireScript("utilities.lib/src/FormatTaskForOutput")
+	const GetTaskInformation = RequireScript("utilities.lib/src/GetTaskInformation")
 
 	let firstFirstRequest = false
 	let status = awaitFirstConnectionWithLogStreaming ? "WAITING_FOR_FIRST_CONNECTION" : "STARTING"
@@ -69,7 +69,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const server = new grpc.Server()
 	const PackageExecutorRPCService = PackageExecutorGrpcObject.PackageExecutorRPCSpec.PackageExecutorRPCService.service
 	const eventEmitter = new EventEmitter()
-	SetupSocketFileRemovalOnShutdown(socketPath)
+	SetupSocketFileRemovalOnShutdown(socket)
 
 	const GetStatus = (call, callback) => callback(null, { status })
 
@@ -138,7 +138,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 			StatusChangeNotification
 		})
 
-	server.bindAsync(`unix:${socketPath}`,
+	server.bindAsync(`unix:${socket}`,
 		grpc.ServerCredentials.createInsecure(),
 		(error) => {
 			if (error) {

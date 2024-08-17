@@ -10,45 +10,42 @@ const ReadJsonFile       = require("../Helpers/ReadJsonFile")
 const DEPENDENCY_LIST = require("../Configs/dependencies.json")
 
 const ExecutePlatformPackageCommand = async ({
-    packageRelativePath,
-    startupJsonFileRelativePath,
-    platformParamsJsonFileRelativePath,
-    nodejsProjectDependenciesRelativePath,
-    socketRelativePath,
+    package,
+    startupJson,
+    ecosystemDefault,
+    nodejsProjectDependencies,
+    socket,
+    ecosystemData,
     awaitFirstConnectionWithLogStreaming,
     executableName,
     commandLineArgs,
     verbose
 }) => {
 
-    if(awaitFirstConnectionWithLogStreaming && !socketRelativePath)
-        throw "O parâmetro socketPath é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
+    if(awaitFirstConnectionWithLogStreaming && !socket)
+        throw "O parâmetro socket é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
 
     currentWorkingDirectory = process.cwd()
 
-    const packagePath                = resolve(currentWorkingDirectory, packageRelativePath)
-    const startupJsonFilePath        = resolve(currentWorkingDirectory, startupJsonFileRelativePath)
-    const platformParamsJsonFilePath = resolve(currentWorkingDirectory, platformParamsJsonFileRelativePath)
-    const socketPath                 = socketRelativePath && resolve(currentWorkingDirectory, socketRelativePath)
-
-    const platformParams = ReadJsonFile(platformParamsJsonFilePath)
+    const ecosystemDefaultParams = ReadJsonFile(ecosystemDefault)
 
     const loggerEmitter = new EventEmitter()
 
     if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
     
     process.env.EXTERNAL_NODE_MODULES_PATH = 
-        resolve(currentWorkingDirectory, nodejsProjectDependenciesRelativePath, "node_modules")
+        resolve(nodejsProjectDependencies, "node_modules")
 
-    const startupParams  = ReadJsonFile(startupJsonFilePath)
+    const startupParams  = ReadJsonFile(startupJson)
 
     const _Execute = async (comInterface) => {
         await ExecutePackage({ 
-            packagePath, 
+            packagePath:package, 
             commandLineArgs,
             executableName,
             startupParams,
-            platformParams,
+            ecosystemDefaultParams,
+            ecosystemData,
             loggerEmitter,
             onChangeTaskList: (taskList) => comInterface && comInterface.UpdateTaskList(taskList),
             DEPENDENCY_LIST
@@ -56,17 +53,14 @@ const ExecutePlatformPackageCommand = async ({
         comInterface && comInterface.NotifyRunning()
     }
 
-    if(!socketPath){
+    if(!socket){
        await _Execute()
     } else {
-        const { 
-            ECO_DIRPATH_MAIN_REPO
-         } = platformParams
 
         const communicationInterface = 
             await CreateBinaryInterfaceViaSocket({
-                socketPath,
-                ECO_DIRPATH_MAIN_REPO,
+                socket,
+                ecosystemData,
                 DEPENDENCY_LIST,
                 awaitFirstConnectionWithLogStreaming
             })

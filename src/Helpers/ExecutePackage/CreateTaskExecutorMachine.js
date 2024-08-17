@@ -1,16 +1,16 @@
 
-const RequirePlatformScript = require("../RequirePlatformScript")
+const CreateRequireScript = require("../CreateRequireScript")
 
-
-const CreateTaskExecutorMachine = (ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST) => {
-    const TaskExecutor = RequirePlatformScript("task-executor.lib/src/TaskExecutor", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST) 
+const CreateTaskExecutorMachine = (ecosystemData, DEPENDENCY_LIST) => {
+    const RequireScript = CreateRequireScript(ecosystemData, DEPENDENCY_LIST)
+    const TaskExecutor = RequireScript("task-executor.lib/src/TaskExecutor") 
     const taskLoaders = {
-        'install-nodejs-package-dependencies' : RequirePlatformScript("install-nodejs-package-dependencies.lib/src/InstallNodejsPackageDependencies.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        'nodejs-package'                      : RequirePlatformScript("nodejs-package.lib/src/NodeJSPackage.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        'application-instance'                : RequirePlatformScript("application-instance.lib/src/ApplicationInstance.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        'command-application'                 : RequirePlatformScript("command-application.lib/src/CommandApplication.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        'service-instance'                    : RequirePlatformScript("service-instance.lib/src/ServiceInstance.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST),
-        'endpoint-instance'                   : RequirePlatformScript("endpoint-instance.lib/src/EndpointInstance.taskLoader", ECO_DIRPATH_MAIN_REPO, DEPENDENCY_LIST)
+        'install-nodejs-package-dependencies' : RequireScript("install-nodejs-package-dependencies.lib/src/InstallNodejsPackageDependencies.taskLoader"),
+        'nodejs-package'                      : RequireScript("nodejs-package.lib/src/NodeJSPackage.taskLoader"),
+        'application-instance'                : RequireScript("application-instance.lib/src/ApplicationInstance.taskLoader"),
+        'command-application'                 : RequireScript("command-application.lib/src/CommandApplication.taskLoader"),
+        'service-instance'                    : RequireScript("service-instance.lib/src/ServiceInstance.taskLoader"),
+        'endpoint-instance'                   : RequireScript("endpoint-instance.lib/src/EndpointInstance.taskLoader")
     }
 
     return TaskExecutor({
