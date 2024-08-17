@@ -9,11 +9,16 @@ const GetApplicationExecutionParams = async ({
     commandLineArgs,
     executableName,
     EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
+    ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
     ecosystemData,
     DEPENDENCY_LIST
 }) => {
     
-    const RequireScript = CreateRequireScript(ecosystemData, DEPENDENCY_LIST)
+    const RequireScript = CreateRequireScript({
+        ecosystemData, 
+        DEPENDENCY_LIST, 
+        ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
+    })
 
     const [
         TranslateMetadataHierarchyForExecutionParams, 

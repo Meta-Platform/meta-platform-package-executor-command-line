@@ -24,10 +24,10 @@ const GetAgentLinkRulesResponse = (agentLinkRules) => {
 const GetTaskInformationResponse = (taskInformation) => {
 	const response =  {
 		...taskInformation,
-		...taskInformation.pTaskId ? { pTaskId: {value: taskInformation.pTaskId} } : {},
-		...taskInformation.staticParameters ? { staticParameters: ConvertObjectToProtoStruct(taskInformation.staticParameters) } : {},
-		...taskInformation.activationRules ? { activationRules: ConvertObjectToProtoStruct(taskInformation.activationRules) } : {},
-		...taskInformation.agentLinkRules ? { agentLinkRules: GetAgentLinkRulesResponse(taskInformation.agentLinkRules), } : {},
+		...taskInformation.pTaskId          ? { pTaskId: {value: taskInformation.pTaskId} }                                       : {},
+		...taskInformation.staticParameters ? { staticParameters: ConvertObjectToProtoStruct(taskInformation.staticParameters) }  : {},
+		...taskInformation.activationRules  ? { activationRules: ConvertObjectToProtoStruct(taskInformation.activationRules) }    : {},
+		...taskInformation.agentLinkRules   ? { agentLinkRules: GetAgentLinkRulesResponse(taskInformation.agentLinkRules) }       : {},
 		...taskInformation.linkedParameters ? { linkedParameters: ConvertObjectToProtoStruct(taskInformation.linkedParameters), } : {}
 	}
 	return response
@@ -40,6 +40,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 	socket,
 	ecosystemData,
 	DEPENDENCY_LIST,
+	ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
 	awaitFirstConnectionWithLogStreaming=false
 }) => {
 
@@ -57,7 +58,10 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const PackageExecutorGrpcObject = grpc
 		.loadPackageDefinition(PackageExecutorRPCSDefinition)
 
-	const RequireScript = CreateRequireScript()
+	const RequireScript = CreateRequireScript({
+		ecosystemData,
+		DEPENDENCY_LIST
+	})
 
 	const FormatTaskForOutput = RequireScript("utilities.lib/src/FormatTaskForOutput")
 	const GetTaskInformation = RequireScript("utilities.lib/src/GetTaskInformation")

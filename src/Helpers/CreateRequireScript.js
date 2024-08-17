@@ -18,13 +18,17 @@ const GetLayerURI = (packageName, DEPENDENCY_LIST) => {
     
 }
 
-const CreateRequireScript = (ecosystemData, DEPENDENCY_LIST) => {
+const CreateRequireScript = ({
+    ecosystemData, 
+    DEPENDENCY_LIST, 
+    ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
+}) => {
     
 
     return (fileURI) => {
         const packageName = GetPackageName(fileURI)
         const layerURI = GetLayerURI(packageName, DEPENDENCY_LIST)
-        const filePath = resolve(ecosystemData, layerURI, fileURI)
+        const filePath = resolve(ecosystemData, ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES, layerURI, fileURI)
         return require(filePath)
     }
 }

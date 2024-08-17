@@ -33,10 +33,15 @@ const ExecutePackage = async ({
                 PKG_CONF_DIRNAME_METADATA,
                 ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR,
                 EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
-                ECOSYSTEMDATA_CONF_FILENAME_PKG_GRAPH_DATA
+                ECOSYSTEMDATA_CONF_FILENAME_PKG_GRAPH_DATA,
+                ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             } = ecosystemDefaultParams
 
-            const RequireScript = CreateRequireScript(ecosystemData, DEPENDENCY_LIST)
+            const RequireScript = CreateRequireScript({
+                ecosystemData,
+                DEPENDENCY_LIST,
+                ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
+            })
 
             const WriteObjectToFile      = RequireScript("json-file-utilities.lib/src/WriteObjectToFile")
             const ResolvePackageName     = RequireScript("resolve-package-name.lib/src/ResolvePackageName")
@@ -60,7 +65,7 @@ const ExecutePackage = async ({
             }
             
             const packageList = await ListPackages({
-                ECO_DIRPATH_INSTALL_DATA,
+                ECO_DIRPATH_INSTALL_DATA:ecosystemData,
                 REPOS_CONF_FILENAME_REPOS_DATA,
                 REPOS_CONF_EXT_MODULE_DIR,
                 REPOS_CONF_EXT_LAYER_DIR,
@@ -80,7 +85,7 @@ const ExecutePackage = async ({
             const packageName     = ResolvePackageName(namespace)
             const environmentName = GenerateEnvironmentName(packageName, packagePath)
 
-            const localPath = join(ECO_DIRPATH_INSTALL_DATA, ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR)
+            const localPath = join(ecosystemData, ECOSYSTEMDATA_CONF_DIRNAME_EXECUTION_DATA_DIR)
     
             const environmentPath = await CreateEnvironment({
                 environmentName, 
@@ -102,6 +107,7 @@ const ExecutePackage = async ({
                 commandLineArgs,
                 executableName,
                 EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
+                ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
                 ecosystemData,
                 DEPENDENCY_LIST
             })

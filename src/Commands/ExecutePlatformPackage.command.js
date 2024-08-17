@@ -22,16 +22,14 @@ const ExecutePlatformPackageCommand = async ({
     verbose
 }) => {
 
+    const loggerEmitter = new EventEmitter()
+    if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
+
     if(awaitFirstConnectionWithLogStreaming && !socket)
         throw "O parâmetro socket é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
 
-    currentWorkingDirectory = process.cwd()
-
     const ecosystemDefaultParams = ReadJsonFile(ecosystemDefault)
-
-    const loggerEmitter = new EventEmitter()
-
-    if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
+    const { ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES } = ecosystemDefaultParams
     
     process.env.EXTERNAL_NODE_MODULES_PATH = 
         resolve(nodejsProjectDependencies, "node_modules")
@@ -45,9 +43,9 @@ const ExecutePlatformPackageCommand = async ({
             executableName,
             startupParams,
             ecosystemDefaultParams,
-            ecosystemData,
             loggerEmitter,
             onChangeTaskList: (taskList) => comInterface && comInterface.UpdateTaskList(taskList),
+            ecosystemData,
             DEPENDENCY_LIST
         })
         comInterface && comInterface.NotifyRunning()
@@ -61,6 +59,7 @@ const ExecutePlatformPackageCommand = async ({
             await CreateBinaryInterfaceViaSocket({
                 socket,
                 ecosystemData,
+                ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
                 DEPENDENCY_LIST,
                 awaitFirstConnectionWithLogStreaming
             })
