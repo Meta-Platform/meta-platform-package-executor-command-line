@@ -12,7 +12,7 @@ const argv = yargs(hideBin(process.argv))
 		type: 'string',
 		demandOption: true
 	})
-	.option('startupJsonFilePath', {
+	.option('startupJson', {
 		describe: 'Caminho do arquivo JSON com os parâmetros de inicialização',
 		type: 'string',
 		demandOption: true
