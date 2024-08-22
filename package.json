@@ -1,13 +1,13 @@
 {
   "name": "meta-platform-package-executor-command-line",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Executor de Pacotes da Plataforma",
   "bin": {
     "pkg-exec": "./src/Executables/exec-pkg.js",
     "pkg-exec-dbg": "./src/ExecutablesDebug/exec-pkg-dbg.js"
   },
   "scripts": {
-    "build": "pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output meta-platform-package-executor-command-line-0.0.9-preview-linux-x64"
+    "build": "pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output meta-platform-package-executor-command-line-0.0.12-preview-linux-x64"
   },
   "author": "kadisk.shark@gmail.com",
   "license": "BSD-3-Clause",
