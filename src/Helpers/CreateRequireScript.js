@@ -8,7 +8,10 @@ const GetPackageName = (uri) => {
 const GetLayerURI = (packageName, DEPENDENCY_LIST) => {
     
     const fullPackageURI = DEPENDENCY_LIST
-        .find(uri => uri.includes(packageName))
+        .find(uri => {
+            const [ _packageName ] = uri.split("/").reverse()
+            return _packageName === packageName
+        })
 
     if (!fullPackageURI) {
         throw `Pacote não encontrado [${packageName}]`

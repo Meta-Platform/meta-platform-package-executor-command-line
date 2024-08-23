@@ -59,6 +59,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 		.loadPackageDefinition(PackageExecutorRPCSDefinition)
 
 	const RequireScript = CreateRequireScript({
+		ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
 		ecosystemData,
 		DEPENDENCY_LIST
 	})
