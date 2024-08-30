@@ -13,4 +13,4 @@ pkg-exec --packagePath "$PACKAGE_PATH" \
          --ecosystemDefault "$ECOSYSTEM_DEFAULT" \
          --nodejsProjectDependencies "$NODEJS_DEPS_PATH" \
          --executableName "$EXEC_NAME" \
-         --commandLineArgs "$*"
+         --commandLineArgs "$@"

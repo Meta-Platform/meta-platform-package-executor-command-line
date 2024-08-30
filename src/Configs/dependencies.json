@@ -10,7 +10,7 @@
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/execution-params-generator.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/resolve-package-name.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/metadata-hierarchy-handler.lib",
-    "EssentialRepo/Commons.Module/FileHandler.layer/json-file-utilities.lib",
+    "MinimumRepo/Minimum.Module/Minimum.layer/json-file-utilities.lib",
     "EssentialRepo/Commons.Module/PlatformLibraries.layer/repository-utilities.lib",
     "EssentialRepo/Commons.Module/PlatformLibraries.layer/environment-handler.lib",
     "EssentialRepo/Commons.Module/Utilities.layer/utilities.lib"
