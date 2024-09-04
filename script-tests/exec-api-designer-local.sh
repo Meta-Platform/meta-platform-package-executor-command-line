@@ -8,10 +8,10 @@ STARTUP_JSON="$PROJECT_PATH/repos/PlatformAppsRepo/Apps.Module/Tools.layer/APIDe
 ECOSYSTEM_DEFAULT="$ECOSYSTEM_DATA_PATH/config-files/MyPlatform.platform-params.json"
 NODEJS_DEPS_PATH="$ECOSYSTEM_DATA_PATH/nodejs-dependencies"
 
-SOCKET_PATH="./pkgexec.sock"
+SUPERVISOR_SOCKET_PATH="./pkgexec.sock"
 
 pkg-exec --packagePath "$PACKAGE_PATH" \
          --startupJson "$STARTUP_JSON" \
          --ecosystemDefault "$ECOSYSTEM_DEFAULT" \
          --nodejsProjectDependencies "$NODEJS_DEPS_PATH" \
-         --socket "$SOCKET_PATH"
+         --supervisorSocket "$SUPERVISOR_SOCKET_PATH"

@@ -2,6 +2,6 @@
 
 PACKAGE_REPO_PATH="Main.Module/Application.layer/platform-executor.cli"
 EXEC_NAME="myexec"
-SOCKET_PATH="./myexec.sock"
+SUPERVISOR_SOCKET_PATH="./myexec.sock"
 
 source run-command-line.sh "$@"

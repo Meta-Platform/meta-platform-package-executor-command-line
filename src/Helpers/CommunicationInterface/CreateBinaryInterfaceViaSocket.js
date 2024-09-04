@@ -37,7 +37,7 @@ const KillProcess = () => process.exit()
 
 
 const CreateBinaryInterfaceViaSocket = async ({
-	socket,
+	supervisorSocket,
 	ecosystemData,
 	DEPENDENCY_LIST,
 	ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
@@ -74,7 +74,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const server = new grpc.Server()
 	const PackageExecutorRPCService = PackageExecutorGrpcObject.PackageExecutorRPCSpec.PackageExecutorRPCService.service
 	const eventEmitter = new EventEmitter()
-	SetupSocketFileRemovalOnShutdown(socket)
+	SetupSocketFileRemovalOnShutdown(supervisorSocket)
 
 	const GetStatus = (call, callback) => callback(null, { status })
 
@@ -143,7 +143,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 			StatusChangeNotification
 		})
 
-	server.bindAsync(`unix:${socket}`,
+	server.bindAsync(`unix:${supervisorSocket}`,
 		grpc.ServerCredentials.createInsecure(),
 		(error) => {
 			if (error) {

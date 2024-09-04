@@ -1,11 +1,11 @@
 const fs = require('fs')
 
-const SetupSocketFileRemovalOnShutdown = (socket) => {
+const SetupSocketFileRemovalOnShutdown = (supervisorSocket) => {
 
 	const _CleanUpSocketFileSync = () => {
 		try {
-			if (fs.existsSync(socket)) {
-				fs.unlinkSync(socket)
+			if (fs.existsSync(supervisorSocket)) {
+				fs.unlinkSync(supervisorSocket)
 			}
 		} catch (error) {}
 	}

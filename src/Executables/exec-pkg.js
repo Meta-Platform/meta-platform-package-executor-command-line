@@ -38,8 +38,8 @@ const argv = yargs(hideBin(process.argv))
 		default: false,
 		demandOption: false
 	})
-	.option('socket', {
-		describe: 'Caminho onde será criado o socket de comunicação do processo executor de pacotes',
+	.option('supervisorSocket', {
+		describe: 'Caminho onde será criado o socket de supervisão do processo executor de pacotes',
 		type: 'string',
 		default: false,
 		demandOption: false

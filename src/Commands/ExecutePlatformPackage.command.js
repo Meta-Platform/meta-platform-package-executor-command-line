@@ -14,7 +14,7 @@ const ExecutePlatformPackageCommand = async ({
     startupJson,
     ecosystemDefault,
     nodejsProjectDependencies,
-    socket,
+    supervisorSocket,
     ecosystemData,
     awaitFirstConnectionWithLogStreaming,
     executableName,
@@ -25,8 +25,8 @@ const ExecutePlatformPackageCommand = async ({
     const loggerEmitter = new EventEmitter()
     if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
 
-    if(awaitFirstConnectionWithLogStreaming && !socket)
-        throw "O parâmetro socket é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
+    if(awaitFirstConnectionWithLogStreaming && !supervisorSocket)
+        throw "O parâmetro supervisorSocket é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
 
     const ecosystemDefaultParams = ReadJsonFile(ecosystemDefault)
     const { ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES } = ecosystemDefaultParams
@@ -51,13 +51,13 @@ const ExecutePlatformPackageCommand = async ({
         comInterface && comInterface.NotifyRunning()
     }
 
-    if(!socket){
+    if(!supervisorSocket){
        await _Execute()
     } else {
 
         const communicationInterface = 
             await CreateBinaryInterfaceViaSocket({
-                socket,
+                supervisorSocket,
                 ecosystemData,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
                 DEPENDENCY_LIST,

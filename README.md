@@ -48,6 +48,6 @@ pkg-exec --packagePath "$PACKAGE_PATH" \
 - **nodejsProjectDependencies**: Caminho para o diretório contendo o `node_modules` com as dependências necessárias.
 - **awaitFirstConnectionWithLogStreaming**: Aguarda a primeira conexão com streaming de logs para continuar o carregamento.
 - **verbose** Mostra detalhe da execução do pacote
-- **socket**: Caminho onde será criado o socket de comunicação do processo executor de pacotes
+- **supervisorSocket**: Caminho onde será criado o socket de supervisão do processo executor de pacotes
 - **executableName** Nome do executável para pacote de linha dec comando
 - **commandLineArgs** Argumentos para o executable de linha de comando
