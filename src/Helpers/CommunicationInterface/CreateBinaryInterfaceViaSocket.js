@@ -3,7 +3,7 @@ const grpc = require('@grpc/grpc-js')
 const protoLoader = require('@grpc/proto-loader')
 const path = require("path")
 
-const CreateRequireScript = require("../CreateRequireScript")
+const CreateScriptLoader = require("../CreateScriptLoader")
 
 const SetupSocketFileRemovalOnShutdown = require("./SetupSocketFileRemovalOnShutdown")
 const ConvertObjectToProtoStruct = require("./ConvertObjectToProtoStruct")
@@ -58,14 +58,14 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const PackageExecutorGrpcObject = grpc
 		.loadPackageDefinition(PackageExecutorRPCSDefinition)
 
-	const RequireScript = CreateRequireScript({
+	const LoaderScript = CreateScriptLoader({
 		ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
 		ecosystemData,
 		DEPENDENCY_LIST
 	})
 
-	const FormatTaskForOutput = RequireScript("utilities.lib/src/FormatTaskForOutput")
-	const GetTaskInformation = RequireScript("utilities.lib/src/GetTaskInformation")
+	const FormatTaskForOutput = LoaderScript("utilities.lib/src/FormatTaskForOutput")
+	const GetTaskInformation = LoaderScript("utilities.lib/src/GetTaskInformation")
 
 	let firstFirstRequest = false
 	let status = awaitFirstConnectionWithLogStreaming ? "WAITING_FOR_FIRST_CONNECTION" : "STARTING"

@@ -1,6 +1,6 @@
 const { join } = require("path")
 
-const CreateRequireScript = require("../CreateRequireScript")
+const CreateScriptLoader = require("../CreateScriptLoader")
 
 
 const GetApplicationExecutionParams = async ({
@@ -14,7 +14,7 @@ const GetApplicationExecutionParams = async ({
     DEPENDENCY_LIST
 }) => {
     
-    const RequireScript = CreateRequireScript({
+    const LoaderScript = CreateScriptLoader({
         ecosystemData, 
         DEPENDENCY_LIST, 
         ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
@@ -24,8 +24,8 @@ const GetApplicationExecutionParams = async ({
         TranslateMetadataHierarchyForExecutionParams, 
         WriteObjectToFile
     ] = [
-        RequireScript("execution-params-generator.lib/src/TranslateMetadataHierarchyForExecutionParams"),
-        RequireScript("json-file-utilities.lib/src/WriteObjectToFile")
+        LoaderScript("execution-params-generator.lib/src/TranslateMetadataHierarchyForExecutionParams"),
+        LoaderScript("json-file-utilities.lib/src/WriteObjectToFile")
     ]
 
     const applicationExecutionParams = TranslateMetadataHierarchyForExecutionParams({

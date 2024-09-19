@@ -3,7 +3,7 @@ const colors = require('colors')
 
 const GetColorLogByStatus = require("./GetColorLogByStatus")
 
-const CreateRequireScript = require("../CreateRequireScript")
+const CreateScriptLoader = require("../CreateScriptLoader")
 
 const CreateTaskExecutorMachine = require("./CreateTaskExecutorMachine")
 const GetApplicationExecutionParams = require("./GetApplicationExecutionParams")
@@ -37,20 +37,20 @@ const ExecutePackage = async ({
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             } = ecosystemDefaultParams
 
-            const RequireScript = CreateRequireScript({
+            const LoaderScript = CreateScriptLoader({
                 ecosystemData,
                 DEPENDENCY_LIST,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             })
 
-            const WriteObjectToFile      = RequireScript("json-file-utilities.lib/src/WriteObjectToFile")
-            const ResolvePackageName     = RequireScript("resolve-package-name.lib/src/ResolvePackageName")
-            const GetMetadataRootNode    = RequireScript("metadata-hierarchy-handler.lib/src/GetMetadataRootNode")
-            const TaskStatusTypes        = RequireScript("task-executor.lib/src/TaskStatusTypes")
-            const ListPackages           = RequireScript("repository-utilities.lib/src/ListPackages")
-            const BuildMetadataHierarchy = RequireScript("dependency-graph-builder.lib/src/BuildMetadataHierarchy")
-            const CreateEnvironment      = RequireScript("environment-handler.lib/src/CreateEnvironment")
-            const PrepareDataDir         = RequireScript("environment-handler.lib/src/PrepareDataDir")
+            const WriteObjectToFile      = LoaderScript("json-file-utilities.lib/src/WriteObjectToFile")
+            const ResolvePackageName     = LoaderScript("resolve-package-name.lib/src/ResolvePackageName")
+            const GetMetadataRootNode    = LoaderScript("metadata-hierarchy-handler.lib/src/GetMetadataRootNode")
+            const TaskStatusTypes        = LoaderScript("task-executor.lib/src/TaskStatusTypes")
+            const ListPackages           = LoaderScript("repository-utilities.lib/src/ListPackages")
+            const BuildMetadataHierarchy = LoaderScript("dependency-graph-builder.lib/src/BuildMetadataHierarchy")
+            const CreateEnvironment      = LoaderScript("environment-handler.lib/src/CreateEnvironment")
+            const PrepareDataDir         = LoaderScript("environment-handler.lib/src/PrepareDataDir")
                 
             const GetRootNamespace = (metadataHierarchy) => {
                 const dependency = GetMetadataRootNode(metadataHierarchy)

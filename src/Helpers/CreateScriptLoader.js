@@ -21,7 +21,7 @@ const GetLayerURI = (packageName, DEPENDENCY_LIST) => {
     
 }
 
-const CreateRequireScript = ({
+const CreateScriptLoader = ({
     ecosystemData, 
     DEPENDENCY_LIST, 
     ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
@@ -36,4 +36,4 @@ const CreateRequireScript = ({
     }
 }
 
-module.exports = CreateRequireScript
+module.exports = CreateScriptLoader
