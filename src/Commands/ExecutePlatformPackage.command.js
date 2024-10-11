@@ -3,9 +3,8 @@ const EventEmitter = require('events')
 
 const ExecutePackage                 = require("../Helpers/ExecutePackage")
 const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket")
-
-const PrintDataLog = require("../Helpers/PrintDataLog")
-const ReadJsonFile       = require("../Helpers/ReadJsonFile")
+const PrintDataLog                   = require("../Helpers/PrintDataLog")
+const ReadJsonFile                   = require("../Helpers/ReadJsonFile")
 
 const DEPENDENCY_LIST = require("../Configs/dependencies.json")
 
