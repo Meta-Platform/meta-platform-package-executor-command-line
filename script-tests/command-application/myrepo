@@ -1,6 +1,6 @@
 #!/bin/bash
 
-PACKAGE_REPO_PATH="/Main.Module/Application.layer/repository-manager.cli"
+PACKAGE_REPO_PATH="/Main.Module/Application.layer/repository-explorer.cli"
 EXEC_NAME="myrepo"
 SUPERVISOR_SOCKET_PATH="./myrepo.sock"
 

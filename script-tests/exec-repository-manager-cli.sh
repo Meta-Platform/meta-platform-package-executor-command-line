@@ -3,8 +3,8 @@
 PROJECT_PATH="~/Workspaces/meta-platform-repo"
 ECOSYSTEM_DATA_PATH="$PROJECT_PATH/EcosystemData"
 
-PACKAGE_PATH="$PROJECT_PATH/repos/meta-platform-ecosystem-core-repository/Main.Module/Application.layer/repository-manager.cli"
-STARTUP_JSON="$PROJECT_PATH/repos/meta-platform-ecosystem-core-repository/Main.Module/Application.layer/repository-manager.cli/metadata/startup-params.json"
+PACKAGE_PATH="$PROJECT_PATH/repos/meta-platform-ecosystem-core-repository/Main.Module/Application.layer/repository-explorer.cli"
+STARTUP_JSON="$PROJECT_PATH/repos/meta-platform-ecosystem-core-repository/Main.Module/Application.layer/repository-explorer.cli/metadata/startup-params.json"
 ECOSYSTEM_DEFAULT="$ECOSYSTEM_DATA_PATH/config-files/MyPlatform.platform-params.json"
 NODEJS_DEPS_PATH="$ECOSYSTEM_DATA_PATH/nodejs-dependencies"
 
