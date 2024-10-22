@@ -1,7 +1,7 @@
 #!/bin/bash
 
 PACKAGE_REPO_PATH="/Main.Module/Application.layer/repository-explorer.cli"
-EXEC_NAME="repoex"
-SUPERVISOR_SOCKET_PATH="./repoex.sock"
+EXEC_NAME="explorer"
+SUPERVISOR_SOCKET_PATH="./explorer.sock"
 
 source run-command-line.sh "$@"
