@@ -1,7 +1,7 @@
 #!/bin/bash
 
-PACKAGE_REPO_PATH="Main.Module/Application.layer/platform-executor.cli"
-EXEC_NAME="myexec"
-SUPERVISOR_SOCKET_PATH="./myexec.sock"
+PACKAGE_REPO_PATH="Main.Module/Application.layer/instance-executor.cli"
+EXEC_NAME="executor"
+SUPERVISOR_SOCKET_PATH="./executor.sock"
 
 source run-command-line.sh "$@"

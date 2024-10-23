@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ECOSYSTEM_DATA_PATH="~/Workspaces/meta-platform-repo/EcosystemData"
-REPOSITORY_PATH="$ECOSYSTEM_DATA_PATH/repos/meta-platform-ecosystem-core-repository"
+REPOSITORY_PATH="$ECOSYSTEM_DATA_PATH/repos/ecosystem-core-repository"
 
 PACKAGE_PATH="$REPOSITORY_PATH/$PACKAGE_REPO_PATH"
 STARTUP_JSON="$REPOSITORY_PATH/$PACKAGE_REPO_PATH/metadata/startup-params.json"
