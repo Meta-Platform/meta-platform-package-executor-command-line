@@ -18,7 +18,7 @@ const GetLayerURI = (packageName, DEPENDENCY_LIST) => {
     }
     const layerURI = fullPackageURI.substring(0, fullPackageURI.lastIndexOf("/"))
     return layerURI
-    
+
 }
 
 const CreateScriptLoader = ({
@@ -26,7 +26,6 @@ const CreateScriptLoader = ({
     DEPENDENCY_LIST, 
     ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
 }) => {
-    
 
     return (fileURI) => {
         const packageName = GetPackageName(fileURI)
@@ -34,6 +33,7 @@ const CreateScriptLoader = ({
         const filePath = resolve(ecosystemData, ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES, layerURI, fileURI)
         return require(filePath)
     }
+    
 }
 
 module.exports = CreateScriptLoader
