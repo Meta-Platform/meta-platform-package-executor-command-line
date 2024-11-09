@@ -1,14 +1,14 @@
 
 const CreateScriptLoader = require("../CreateScriptLoader")
 
-const CreateTaskExecutorMachine = ({
-    ecosystemData, 
-    DEPENDENCY_LIST, 
+const CreateTaskExecutorMachine = async ({
+    ecosystemData,
+    REPOS_CONF_FILENAME_REPOS_DATA,
     ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
 }) => {
-    const LoaderScript = CreateScriptLoader({
-        ecosystemData, 
-        DEPENDENCY_LIST, 
+    const LoaderScript = await CreateScriptLoader({
+        ecosystemData,
+        REPOS_CONF_FILENAME_REPOS_DATA,
         ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
     })
     const TaskExecutor = LoaderScript("task-executor.lib/src/TaskExecutor") 

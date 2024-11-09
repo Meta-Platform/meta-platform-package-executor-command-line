@@ -18,8 +18,7 @@ const ExecutePackage = async ({
     ecosystemData,
     loggerEmitter,
     onChangeTaskList,
-    ecosystemDefaultParams,
-    DEPENDENCY_LIST
+    ecosystemDefaultParams
 }) => 
     new Promise(async (resolve, reject) => {
         try{
@@ -37,9 +36,9 @@ const ExecutePackage = async ({
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             } = ecosystemDefaultParams
 
-            const LoaderScript = CreateScriptLoader({
+            const LoaderScript = await CreateScriptLoader({
                 ecosystemData,
-                DEPENDENCY_LIST,
+                REPOS_CONF_FILENAME_REPOS_DATA,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             })
 
@@ -106,15 +105,15 @@ const ExecutePackage = async ({
                 metadataHierarchy,
                 commandLineArgs,
                 executableName,
+                REPOS_CONF_FILENAME_REPOS_DATA,
                 EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
-                ecosystemData,
-                DEPENDENCY_LIST
+                ecosystemData
             })
     
-            const startupTaskExecutorMachine = CreateTaskExecutorMachine({
-                ecosystemData, 
-                DEPENDENCY_LIST, 
+            const startupTaskExecutorMachine = await CreateTaskExecutorMachine({
+                ecosystemData,
+                REPOS_CONF_FILENAME_REPOS_DATA,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             })
     

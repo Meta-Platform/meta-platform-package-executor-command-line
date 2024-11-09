@@ -2,21 +2,20 @@ const { join } = require("path")
 
 const CreateScriptLoader = require("../CreateScriptLoader")
 
-
 const GetApplicationExecutionParams = async ({
     environmentPath,
     metadataHierarchy,
     commandLineArgs,
     executableName,
+    REPOS_CONF_FILENAME_REPOS_DATA,
     EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES,
     ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
-    ecosystemData,
-    DEPENDENCY_LIST
+    ecosystemData
 }) => {
     
-    const LoaderScript = CreateScriptLoader({
-        ecosystemData, 
-        DEPENDENCY_LIST, 
+    const LoaderScript = await CreateScriptLoader({
+        ecosystemData,
+        REPOS_CONF_FILENAME_REPOS_DATA,
         ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
     })
 

@@ -39,8 +39,8 @@ const KillProcess = () => process.exit()
 const CreateBinaryInterfaceViaSocket = async ({
 	supervisorSocket,
 	ecosystemData,
-	DEPENDENCY_LIST,
 	ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
+	REPOS_CONF_FILENAME_REPOS_DATA,
 	awaitFirstConnectionWithLogStreaming=false
 }) => {
 
@@ -58,10 +58,10 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const PackageExecutorGrpcObject = grpc
 		.loadPackageDefinition(PackageExecutorRPCSDefinition)
 
-	const LoaderScript = CreateScriptLoader({
-		ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
+	const LoaderScript = await CreateScriptLoader({
 		ecosystemData,
-		DEPENDENCY_LIST
+		REPOS_CONF_FILENAME_REPOS_DATA,
+		ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
 	})
 
 	const FormatTaskForOutput = LoaderScript("utilities.lib/src/FormatTaskForOutput")

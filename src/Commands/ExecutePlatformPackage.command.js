@@ -6,8 +6,6 @@ const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterfac
 const PrintDataLog                   = require("../Helpers/PrintDataLog")
 const ReadJsonFile                   = require("../Helpers/ReadJsonFile")
 
-const DEPENDENCY_LIST = require("../Configs/dependencies.json")
-
 const ExecutePlatformPackageCommand = async ({
     package,
     startupJson,
@@ -28,7 +26,10 @@ const ExecutePlatformPackageCommand = async ({
         throw "O parâmetro supervisorSocket é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
 
     const ecosystemDefaultParams = ReadJsonFile(ecosystemDefault)
-    const { ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES } = ecosystemDefaultParams
+    const { 
+        ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
+        REPOS_CONF_FILENAME_REPOS_DATA
+     } = ecosystemDefaultParams
     
     process.env.EXTERNAL_NODE_MODULES_PATH = 
         resolve(nodejsProjectDependencies, "node_modules")
@@ -44,8 +45,7 @@ const ExecutePlatformPackageCommand = async ({
             ecosystemDefaultParams,
             loggerEmitter,
             onChangeTaskList: (taskList) => comInterface && comInterface.UpdateTaskList(taskList),
-            ecosystemData,
-            DEPENDENCY_LIST
+            ecosystemData
         })
         comInterface && comInterface.NotifyRunning()
     }
@@ -58,9 +58,9 @@ const ExecutePlatformPackageCommand = async ({
             await CreateBinaryInterfaceViaSocket({
                 supervisorSocket,
                 ecosystemData,
+                awaitFirstConnectionWithLogStreaming,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
-                DEPENDENCY_LIST,
-                awaitFirstConnectionWithLogStreaming
+                REPOS_CONF_FILENAME_REPOS_DATA
             })
 
             loggerEmitter.on("log", (dataLog) => communicationInterface.SendLog(dataLog))
