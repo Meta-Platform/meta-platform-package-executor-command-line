@@ -64,7 +64,7 @@ const ExecutePackage = async ({
             }
             
             const packageList = await ListPackages({
-                ECO_DIRPATH_INSTALL_DATA:ecosystemData,
+                installDataDirPath:ecosystemData,
                 REPOS_CONF_FILENAME_REPOS_DATA,
                 REPOS_CONF_EXT_MODULE_DIR,
                 REPOS_CONF_EXT_LAYER_DIR,
