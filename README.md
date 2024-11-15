@@ -26,7 +26,7 @@ Para executar um pacote da plataforma, configure os caminhos e parâmetros neces
 ```bash
 #!/bin/bash
 
-PROJECT_PATH="/home/kaiocezar/Workspaces/meta-platform-repo"
+PROJECT_PATH="/home/kadisk/Workspaces/meta-platform-repo"
 ECOSYSTEM_DATA_PATH="$PROJECT_PATH/EcosystemData"
 
 PACKAGE_PATH="$PROJECT_PATH/repos/PlaformApplicationsRepo/Apps.Module/Tools.layer/APIDesigner.group/api-designer.webapp"
