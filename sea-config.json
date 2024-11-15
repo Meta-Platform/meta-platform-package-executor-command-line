@@ -1,0 +1,4 @@
+{
+    "main": "src/Executables/exec-pkg.js",
+    "output": "exec-pkg.blob"
+}
