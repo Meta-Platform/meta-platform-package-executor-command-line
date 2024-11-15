@@ -1,4 +1,6 @@
 {
-    "main": "src/Executables/exec-pkg.js",
-    "output": "exec-pkg.blob"
-}
+    "main": "dist/exec-pkg.js",
+    "output": "dist/exec-pkg.blob",
+    "conditions": ["default"]
+  }
+  
