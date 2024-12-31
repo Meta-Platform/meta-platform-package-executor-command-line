@@ -41,7 +41,8 @@ const CreateBinaryInterfaceViaSocket = async ({
 	ecosystemData,
 	ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
 	REPOS_CONF_FILENAME_REPOS_DATA,
-	awaitFirstConnectionWithLogStreaming=false
+	awaitFirstConnectionWithLogStreaming=false,
+	startupArgumentsResponse
 }) => {
 
 	const PROTO_PATH = path.join(__dirname, "./IDL/PackageExecutorRPCSpec.proto")
@@ -113,6 +114,10 @@ const CreateBinaryInterfaceViaSocket = async ({
 		}
 	}
 
+	const GetStartupArguments = (call, callback) => {
+		callback(null, startupArgumentsResponse)
+	}
+
 	const LogStreaming = (call) => {
 		RegisterFirstResquest()
 
@@ -133,6 +138,21 @@ const CreateBinaryInterfaceViaSocket = async ({
         })
 	}
 
+	const GetProcessInformation = (call, callback) => {
+		const {
+			pid,
+			platform,
+			arch
+		} = process
+
+		callback(null, {
+			pid,
+			platform,
+			arch
+		})
+	}
+
+
 	server.addService(PackageExecutorRPCService,
 		{
 			Kill: KillProcess,
@@ -140,7 +160,9 @@ const CreateBinaryInterfaceViaSocket = async ({
 			ListTasks,
 			GetTask,
 			LogStreaming,
-			StatusChangeNotification
+			StatusChangeNotification,
+			GetStartupArguments,
+			GetProcessInformation
 		})
 
 	server.bindAsync(`unix:${supervisorSocket}`,
@@ -151,7 +173,6 @@ const CreateBinaryInterfaceViaSocket = async ({
 				return
 			}
 		})
-
 
 	const ChangeStatus = (_status, err) => {
 		status = _status

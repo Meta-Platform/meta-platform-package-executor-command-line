@@ -51,3 +51,4 @@ pkg-exec --packagePath "$PACKAGE_PATH" \
 - **supervisorSocket**: Caminho onde será criado o socket de supervisão do processo executor de pacotes
 - **executableName** Nome do executável para pacote de linha dec comando
 - **commandLineArgs** Argumentos para o executable de linha de comando
+- **ecosystemData** Caminho para o diretório do ecosistema que será usado como base para execução

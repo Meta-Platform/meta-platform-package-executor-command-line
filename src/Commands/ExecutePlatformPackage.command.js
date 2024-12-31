@@ -6,6 +6,23 @@ const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterfac
 const PrintDataLog                   = require("../Helpers/PrintDataLog")
 const ReadJsonFile                   = require("../Helpers/ReadJsonFile")
 
+const ConvertInstanceArgsToArgsResponse = (instanceArguments) => {
+    
+    const _CreateChunkValid = (argumentName, value) => value ? {[argumentName]: value} : {}
+    
+    return {
+        packagePath                  : instanceArguments.package,
+        startupJsonFilePath          : instanceArguments.startupJson,
+        ecosystemDefaultJsonFilePath : instanceArguments.ecosystemDefault,
+        nodejsProjectDependencies    : instanceArguments.nodejsProjectDependencies,
+        verbose                      : instanceArguments.verbose,
+        ecosystemDataPath            : instanceArguments.ecosystemData,
+        ..._CreateChunkValid("supervisorSocketPath", instanceArguments.supervisorSocket),
+        ..._CreateChunkValid("executableName", instanceArguments.executableName),
+        ..._CreateChunkValid("commandLineArgs", instanceArguments.commandLineArgs)
+    }
+}
+
 const ExecutePlatformPackageCommand = async ({
     package,
     startupJson,
@@ -18,7 +35,6 @@ const ExecutePlatformPackageCommand = async ({
     commandLineArgs,
     verbose
 }) => {
-
     const loggerEmitter = new EventEmitter()
     if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
 
@@ -54,13 +70,27 @@ const ExecutePlatformPackageCommand = async ({
        await _Execute()
     } else {
 
+        const instanceArguments = {
+            package,
+            startupJson,
+            ecosystemDefault,
+            nodejsProjectDependencies,
+            supervisorSocket,
+            ecosystemData,
+            awaitFirstConnectionWithLogStreaming,
+            executableName,
+            commandLineArgs,
+            verbose
+        }
+        
         const communicationInterface = 
             await CreateBinaryInterfaceViaSocket({
                 supervisorSocket,
                 ecosystemData,
                 awaitFirstConnectionWithLogStreaming,
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES,
-                REPOS_CONF_FILENAME_REPOS_DATA
+                REPOS_CONF_FILENAME_REPOS_DATA,
+                startupArgumentsResponse: ConvertInstanceArgsToArgsResponse(instanceArguments)
             })
 
             loggerEmitter.on("log", (dataLog) => communicationInterface.SendLog(dataLog))
