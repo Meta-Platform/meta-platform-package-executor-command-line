@@ -33,7 +33,7 @@ const GetTaskInformationResponse = (taskInformation) => {
 	return response
 }
 
-const KillProcess = () => process.exit()
+const KillInstance = () => process.exit()
 
 
 const CreateBinaryInterfaceViaSocket = async ({
@@ -155,7 +155,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 
 	server.addService(PackageExecutorRPCService,
 		{
-			Kill: KillProcess,
+			KillInstance,
 			GetStatus,
 			ListTasks,
 			GetTask,
