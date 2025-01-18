@@ -1,6 +1,6 @@
 {
   "name": "meta-platform-package-executor-command-line",
-  "version": "0.0.21",
+  "version": "0.0.22",
   "description": "Executor de Pacotes da Plataforma",
   "bin": {
     "pkg-exec": "./src/Executables/exec-pkg.js",

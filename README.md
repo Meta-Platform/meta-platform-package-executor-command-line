@@ -3,7 +3,7 @@
 Este executor permite a execução de pacotes da plataforma fora do ecossistema padrão.
 
 ## Pré-requisitos
-- Node.js versão 18
+- Node.js versão 22
 
 ## Instalação
 
