@@ -93,7 +93,17 @@ const ExecutePlatformPackageCommand = async ({
                 startupArgumentsResponse: ConvertInstanceArgsToArgsResponse(instanceArguments)
             })
 
-            loggerEmitter.on("log", (dataLog) => communicationInterface.SendLog(dataLog))
+            const originalLog = console.log;
+
+            console.log = function (...args) {
+                communicationInterface.SendLog({
+                    sourceName: "ExecutePlatformPackageCommand",
+                    type: "stdout",
+                    message: args.join(" "),
+                })
+                originalLog.apply(console, args)
+            }
+
 
             if(awaitFirstConnectionWithLogStreaming){
                 communicationInterface
