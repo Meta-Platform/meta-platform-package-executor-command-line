@@ -165,7 +165,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 			GetProcessInformation
 		})
 
-	server.bindAsync(`unix:${supervisorSocket}`,
+	server.bindAsync(supervisorSocket,
 		grpc.ServerCredentials.createInsecure(),
 		(error) => {
 			if (error) {
