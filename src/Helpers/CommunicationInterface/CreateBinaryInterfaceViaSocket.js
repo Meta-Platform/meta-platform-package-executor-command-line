@@ -12,6 +12,10 @@ const FIRST_CONNECTION_EVENT = Symbol()
 const LOG_EVENT = Symbol()
 const EXECUTION_STATUS_EVENT = Symbol()
 
+
+const IsSocketUnix = (socket) => socket.startsWith("unix:")
+const GetSocketFilePath = (socket) => socket.replace("unix:", "")
+
 const GetAgentLinkRulesResponse = (agentLinkRules) => {
 	return agentLinkRules.map( rule => {
 		return {
@@ -75,7 +79,11 @@ const CreateBinaryInterfaceViaSocket = async ({
 	const server = new grpc.Server()
 	const PackageExecutorRPCService = PackageExecutorGrpcObject.PackageExecutorRPCSpec.PackageExecutorRPCService.service
 	const eventEmitter = new EventEmitter()
-	SetupSocketFileRemovalOnShutdown(supervisorSocket)
+	
+	if(IsSocketUnix(supervisorSocket)){
+		const socketFilePath = GetSocketFilePath(supervisorSocket)
+		SetupSocketFileRemovalOnShutdown(socketFilePath)
+	}
 
 	const GetStatus = (call, callback) => callback(null, { status })
 
