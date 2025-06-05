@@ -38,6 +38,9 @@ const ExecutePlatformPackageCommand = async ({
     const loggerEmitter = new EventEmitter()
     if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
 
+    if(!ecosystemDefault)
+        throw "O parâmetro ecosystemDefault é obrigatório"
+
     if(awaitFirstConnectionWithLogStreaming && !supervisorSocket)
         throw "O parâmetro supervisorSocket é obrigatório caso awaitFirstConnectionWithLogStreaming seja true"
 
