@@ -38,6 +38,8 @@ const ExecutePlatformPackageCommand = async ({
     const loggerEmitter = new EventEmitter()
     if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
 
+    console.log(ecosystemDefault)
+    
     if(!ecosystemDefault)
         throw "O parâmetro ecosystemDefault é obrigatório"
 
