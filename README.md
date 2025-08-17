@@ -1,54 +1,93 @@
 # Executor de Pacotes da Plataforma
 
-Este executor permite a execução de pacotes da plataforma fora do ecossistema padrão.
+![Node.js Version](https://img.shields.io/badge/node-%3E%3D22-brightgreen)
+![License](https://img.shields.io/badge/license-BSD--3--Clause-blue)
 
-## Pré-requisitos
-- Node.js versão 22
+O Executor de Pacotes da Plataforma é uma ferramenta robusta que permite a execução de pacotes da plataforma fora do ecossistema padrão, fornecendo controle completo sobre o ambiente de execução e integração com sistemas de supervisão.
 
-## Instalação
+## ✨ Funcionalidades
 
-Clone o repositório e instale as dependências:
+- Execução isolada de pacotes da plataforma
+- Configuração flexível de ambientes de execução
+- Suporte a parâmetros de inicialização via JSON
+- Integração com dependências Node.js externas
+- Streaming de logs e supervisão de processos
+- Modo verbose para depuração detalhada
+- Suporte a aplicações CLI e serviços
+
+
+## 🛠 Instalação
+
+Para instalar globalmente e disponibilizar os comandos `pkg-exec` e `pkg-exec-dbg` no seu sistema:
 
 ```bash
-npm install
+npm install -g package-executor
 ```
 
-Crie os links simbólicos para os executáveis `pkg-exec` e `pkg-exec-dbg`:
+## 🚀 Uso Básico
+
+Execute um pacote da plataforma com o comando:
 
 ```bash
-npm link
+pkg-exec --packagePath "/caminho/do/pacote" \
+         --startupJson "/caminho/startup-params.json" \
+         --ecosystemDefault "/caminho/platform-params.json" \
+         --nodejsProjectDependencies "/caminho/nodejs-dependencies" \
+         --ecosystemData "/caminho/EcosystemData"
 ```
 
-## Uso
+## ⚙️ Parâmetros de Configuração
 
-Para executar um pacote da plataforma, configure os caminhos e parâmetros necessários:
+| Parâmetro | Obrigatório | Descrição |
+|-----------|-------------|-----------|
+| `--packagePath` | Sim | Caminho absoluto para o pacote a ser executado |
+| `--startupJson` | Sim | Caminho para o arquivo JSON com parâmetros de inicialização |
+| `--ecosystemDefault` | Sim | Caminho para o arquivo JSON com configurações padrão da plataforma |
+| `--nodejsProjectDependencies` | Sim | Caminho para o diretório contendo `node_modules` com dependências |
+| `--ecosystemData` | Sim | Caminho para o diretório EcosystemData válido |
+| `--awaitFirstConnectionWithLogStreaming` | Não | Aguarda conexão inicial para streaming de logs (padrão: false) |
+| `--supervisorSocket` | Não | Caminho para criação do socket de supervisão |
+| `--executableName` | Não | Nome do executável para pacotes CLI |
+| `--commandLineArgs` | Não | Argumentos de linha de comando para o executável |
+| `--verbose` | Não | Habilita modo detalhado de logging (padrão: false) |
+
+## 🔍 Exemplo Completo
 
 ```bash
 #!/bin/bash
 
-PROJECT_PATH="/home/kadisk/Workspaces/meta-platform-repo"
+PROJECT_PATH="/home/user/Workspaces/platform-project"
 ECOSYSTEM_DATA_PATH="$PROJECT_PATH/EcosystemData"
 
-PACKAGE_PATH="$PROJECT_PATH/repos/PlatformApplicationsRepo/Apps.Module/Tools.layer/APIDesigner.group/api-designer.webapp"
-STARTUP_JSON="$PROJECT_PATH/repos/PlatformApplicationsRepo/Apps.Module/Tools.layer/APIDesigner.group/api-designer.webapp/metadata/startup-params.json"
-ECOSYSTEM_DEFAULT="$ECOSYSTEM_DATA_PATH/config-files/MyPlatform.platform-params.json"
+PACKAGE_PATH="$PROJECT_PATH/repos/MyApp/Tools.layer/App.group/webapp"
+STARTUP_JSON="$PACKAGE_PATH/metadata/startup-params.json"
+ECOSYSTEM_DEFAULT="$ECOSYSTEM_DATA_PATH/config-files/PlatformParams.json"
 NODEJS_DEPS_PATH="$ECOSYSTEM_DATA_PATH/nodejs-dependencies"
 
 pkg-exec --packagePath "$PACKAGE_PATH" \
          --startupJson "$STARTUP_JSON" \
          --ecosystemDefault "$ECOSYSTEM_DEFAULT" \
-         --nodejsProjectDependencies "$NODEJS_DEPS_PATH"
+         --nodejsProjectDependencies "$NODEJS_DEPS_PATH" \
+         --ecosystemData "$ECOSYSTEM_DATA_PATH" \
+         --verbose
 ```
 
-## Parâmetros
+## 🤝 Contribuição
 
-- **packagePath**: Caminho onde o pacote está localizado.
-- **startupJson**: Caminho para o arquivo JSON com parâmetros de inicialização do pacote.
-- **ecosystemDefault**: Caminho para o arquivo JSON com parâmetros específicos da plataforma.
-- **nodejsProjectDependencies**: Caminho para o diretório contendo o `node_modules` com as dependências necessárias.
-- **awaitFirstConnectionWithLogStreaming**: Aguarda a primeira conexão com streaming de logs para continuar o carregamento.
-- **verbose** Mostra detalhe da execução do pacote
-- **supervisorSocket**: Caminho onde será criado o socket de supervisão do processo executor de pacotes
-- **executableName** Nome do executável para pacote de linha dec comando
-- **commandLineArgs** Argumentos para o executable de linha de comando
-- **ecosystemData** Caminho para o diretório do ecosistema que será usado como base para execução
+Contribuições são bem-vindas! Siga estes passos:
+
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Distribuído sob licença BSD-3-Clause. Veja `LICENSE` para mais informações.
+
+## ✉️ Contato
+
+Kaio Cezar - kadisk.shark@gmail.com
+
+Link do Projeto: [https://github.com/Meta-Platform/meta-platform-package-executor-command-line](https://github.com/Meta-Platform/meta-platform-package-executor-command-line)
