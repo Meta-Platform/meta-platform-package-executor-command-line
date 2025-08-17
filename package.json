@@ -1,10 +1,11 @@
 {
-  "name": "meta-platform-package-executor-command-line",
+  "name": "package-executor",
   "version": "0.0.22",
   "description": "Executor de Pacotes da Plataforma",
   "bin": {
-    "pkg-exec": "./src/Executables/exec-pkg.js",
-    "pkg-exec-dbg": "./src/ExecutablesDebug/exec-pkg-dbg.js"
+    "package-executor": "src/Executables/exec-pkg.js",
+    "pkg-exec": "src/Executables/exec-pkg.js",
+    "pkg-exec-dbg": "src/ExecutablesDebug/exec-pkg-dbg.js"
   },
   "author": "kadisk.shark@gmail.com",
   "license": "BSD-3-Clause",
