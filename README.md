@@ -5,7 +5,7 @@
 
 O Executor de Pacotes da Plataforma é uma ferramenta robusta que permite a execução de pacotes da plataforma fora do ecossistema padrão, fornecendo controle completo sobre o ambiente de execução e integração com sistemas de supervisão.
 
-## ✨ Funcionalidades
+## Funcionalidades
 
 - Execução isolada de pacotes da plataforma
 - Configuração flexível de ambientes de execução
@@ -16,7 +16,7 @@ O Executor de Pacotes da Plataforma é uma ferramenta robusta que permite a exec
 - Suporte a aplicações CLI e serviços
 
 
-## 🛠 Instalação
+## Instalação
 
 Para instalar globalmente e disponibilizar os comandos `pkg-exec` e `pkg-exec-dbg` no seu sistema:
 
@@ -24,7 +24,7 @@ Para instalar globalmente e disponibilizar os comandos `pkg-exec` e `pkg-exec-db
 npm install -g package-executor
 ```
 
-## 🚀 Uso Básico
+## Uso Básico
 
 Execute um pacote da plataforma com o comando:
 
@@ -36,7 +36,7 @@ pkg-exec --packagePath "/caminho/do/pacote" \
          --ecosystemData "/caminho/EcosystemData"
 ```
 
-## ⚙️ Parâmetros de Configuração
+## Parâmetros de Configuração
 
 | Parâmetro | Obrigatório | Descrição |
 |-----------|-------------|-----------|
@@ -51,7 +51,7 @@ pkg-exec --packagePath "/caminho/do/pacote" \
 | `--commandLineArgs` | Não | Argumentos de linha de comando para o executável |
 | `--verbose` | Não | Habilita modo detalhado de logging (padrão: false) |
 
-## 🔍 Exemplo Completo
+## Exemplo Completo
 
 ```bash
 #!/bin/bash
@@ -72,7 +72,7 @@ pkg-exec --packagePath "$PACKAGE_PATH" \
          --verbose
 ```
 
-## 🤝 Contribuição
+## Contribuição
 
 Contribuições são bem-vindas! Siga estes passos:
 
@@ -82,11 +82,11 @@ Contribuições são bem-vindas! Siga estes passos:
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 📄 Licença
+## Licença
 
 Distribuído sob licença BSD-3-Clause. Veja `LICENSE` para mais informações.
 
-## ✉️ Contato
+## Contato
 
 Kaio Cezar - kadisk.shark@gmail.com
 
