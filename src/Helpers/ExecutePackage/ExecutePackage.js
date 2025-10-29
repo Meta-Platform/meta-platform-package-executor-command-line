@@ -9,6 +9,7 @@ const CreateTaskExecutorMachine = require("./CreateTaskExecutorMachine")
 const GetApplicationExecutionParams = require("./GetApplicationExecutionParams")
 const CreateDebounce = require("./CreateDebounce")
 const GenerateEnvironmentName = require("./GenerateEnvironmentName")
+const GetIsolateExecutionParameters = require("./GetIsolateExecutionParameters")
 
 const ExecutePackage = async ({ 
     packagePath, 
@@ -156,8 +157,8 @@ const ExecutePackage = async ({
                         DebouncedCheckIfThePackageIsWorking()
                     }
                 })
-    
-            startupTaskExecutorMachine.CreateTasks(applicationExecutionParams)
+            const isolatedExecutionParameters = GetIsolateExecutionParameters(applicationExecutionParams, {environmentPath})
+            startupTaskExecutorMachine.CreateTasks(isolatedExecutionParameters)
         }catch(e){
             loggerEmitter && loggerEmitter.emit("log", {
                 sourceName: "ExecutePackage",
