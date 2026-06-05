@@ -29,7 +29,7 @@ npm install -g package-executor
 Execute um pacote da plataforma com o comando:
 
 ```bash
-pkg-exec --packagePath "/caminho/do/pacote" \
+pkg-exec --package "/caminho/do/pacote" \
          --startupJson "/caminho/startup-params.json" \
          --ecosystemDefault "/caminho/platform-params.json" \
          --nodejsProjectDependencies "/caminho/nodejs-dependencies" \
@@ -38,18 +38,35 @@ pkg-exec --packagePath "/caminho/do/pacote" \
 
 ## Parâmetros de Configuração
 
-| Parâmetro | Obrigatório | Descrição |
-|-----------|-------------|-----------|
-| `--packagePath` | Sim | Caminho absoluto para o pacote a ser executado |
-| `--startupJson` | Sim | Caminho para o arquivo JSON com parâmetros de inicialização |
-| `--ecosystemDefault` | Sim | Caminho para o arquivo JSON com configurações padrão da plataforma |
-| `--nodejsProjectDependencies` | Sim | Caminho para o diretório contendo `node_modules` com dependências |
-| `--ecosystemData` | Sim | Caminho para o diretório EcosystemData válido |
-| `--awaitFirstConnectionWithLogStreaming` | Não | Aguarda conexão inicial para streaming de logs (padrão: false) |
-| `--supervisorSocket` | Não | Caminho para criação do socket de supervisão |
-| `--executableName` | Não | Nome do executável para pacotes CLI |
-| `--commandLineArgs` | Não | Argumentos de linha de comando para o executável |
-| `--verbose` | Não | Habilita modo detalhado de logging (padrão: false) |
+Os parâmetros abaixo refletem as `option`s declaradas em
+[`src/Executables/exec-pkg.js`](./src/Executables/exec-pkg.js).
+
+| Parâmetro | Obrigatório | Tipo | Padrão | Descrição |
+|-----------|-------------|------|--------|-----------|
+| `--package` | Sim | string | — | Caminho do pacote a ser executado |
+| `--startupJson` | Sim | string | — | Caminho do arquivo JSON com os parâmetros de inicialização |
+| `--ecosystemData` | Sim | string | — | Caminho do diretório `EcosystemData` válido |
+| `--ecosystemDefault` | Sim | string | — | Caminho do arquivo JSON de parâmetros da plataforma |
+| `--nodejsProjectDependencies` | Sim | string | — | Caminho do projeto com as dependências Node.js (contém `node_modules`) |
+| `--awaitFirstConnectionWithLogStreaming` | Não | boolean | `false` | Aguarda a primeira conexão (com streaming de logs) antes de executar. Exige `--supervisorSocket`. |
+| `--supervisorSocket` | Não | string | — | Caminho onde será criado o socket de supervisão (gRPC) do processo |
+| `--executableName` | Não | string | — | Nome do executável, para pacotes de linha de comando (CLI) |
+| `--commandLineArgs` | Não | string | — | Argumentos repassados ao executável de linha de comando |
+| `--verbose` | Não | boolean | `false` | Habilita o log detalhado no terminal |
+
+> **Atenção (mudança de nome de parâmetro):** o parâmetro do caminho do pacote é
+> `--package` no código atual (`v0.0.26`). Os scripts em
+> [`script-tests/`](./script-tests/) ainda usam o nome antigo `--packagePath` e,
+> portanto, não funcionam com o binário atual sem ajuste.
+> `> TODO: confirmar` se os scripts devem ser atualizados para `--package`.
+
+### Regras de validação observadas no código
+
+- `--ecosystemDefault` é obrigatório (validação explícita além do `yargs`).
+- Se `--awaitFirstConnectionWithLogStreaming` for `true`, `--supervisorSocket`
+  passa a ser obrigatório.
+- Sem `--supervisorSocket`, o pacote é executado diretamente, sem expor a
+  interface de supervisão.
 
 ## Exemplo Completo
 
@@ -64,13 +81,58 @@ STARTUP_JSON="$PACKAGE_PATH/metadata/startup-params.json"
 ECOSYSTEM_DEFAULT="$ECOSYSTEM_DATA_PATH/config-files/PlatformParams.json"
 NODEJS_DEPS_PATH="$ECOSYSTEM_DATA_PATH/nodejs-dependencies"
 
-pkg-exec --packagePath "$PACKAGE_PATH" \
+pkg-exec --package "$PACKAGE_PATH" \
          --startupJson "$STARTUP_JSON" \
          --ecosystemDefault "$ECOSYSTEM_DEFAULT" \
          --nodejsProjectDependencies "$NODEJS_DEPS_PATH" \
          --ecosystemData "$ECOSYSTEM_DATA_PATH" \
          --verbose
 ```
+
+## Supervisão via gRPC
+
+Quando iniciado com `--supervisorSocket`, o executor cria um servidor gRPC sobre
+um socket Unix e passa a expor operações de **supervisão** do processo:
+`KillInstance`, `GetStatus`, `ListTasks`, `GetTask`, `LogStreaming`,
+`StatusChangeNotification`, `GetStartupArguments` e `GetProcessInformation`
+(ver [`CreateBinaryInterfaceViaSocket.js`](./src/Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket.js)).
+
+A definição do serviço fica em
+[`src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto`](./src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto)
+— idêntica à definição canônica do padrão aberto. O contrato completo (RPCs,
+enums e mensagens) está documentado em
+[Package Executor RPC Standard](../meta-platform-open-standard/specifications/package-executor-rpc.md).
+
+A CLI `supervisor` (do `instance-supervisor.cli`) é um cliente dessa interface —
+veja o
+[Guia de Início Rápido](../../docs/GUIA-INICIO-RAPIDO.md#5-supervisionar-processos-supervisor).
+
+## Modo de depuração (`pkg-exec-dbg`)
+
+O binário `pkg-exec-dbg` executa o `pkg-exec` sob o inspetor do Node
+(`--inspect-brk`), aceitando os mesmos parâmetros. Útil para depurar a execução
+de um pacote passo a passo.
+
+## Exemplos em `script-tests/`
+
+A pasta [`script-tests/`](./script-tests/) reúne scripts de exemplo de execução
+de pacotes reais (sujeitos ao ajuste de `--packagePath` → `--package` citado
+acima):
+
+| Script | Demonstra |
+|--------|-----------|
+| [`exec-repository-manager-cli.sh`](./script-tests/exec-repository-manager-cli.sh) | Execução de uma CLI com `--supervisorSocket`. |
+| [`exec-api-designer-local.sh`](./script-tests/exec-api-designer-local.sh) | Execução de uma `.webapp` local com supervisão. |
+| [`exec-api-designer-local-dbg.sh`](./script-tests/exec-api-designer-local-dbg.sh) | A mesma execução em modo de depuração (`pkg-exec-dbg`). |
+| [`command-application/run-command-line.sh`](./script-tests/command-application/run-command-line.sh) | Execução de CLI usando `--executableName` e `--commandLineArgs`. |
+| [`platform-main-application.app/`](./script-tests/platform-main-application.app/) | Execução de uma `.app` (dev local, binário e depuração), com parâmetros isolados em `pkg-exec-params.sh`. |
+
+## Configuração de dependências
+
+O arquivo [`src/Configs/dependency-references.json`](./src/Configs/dependency-references.json)
+lista as libs do `essential-repository` (task executor, task loaders e metadata
+helpers) que o executor carrega via *script loader* para montar e rodar o plano
+de execução de um pacote.
 
 ## Contribuição
 
