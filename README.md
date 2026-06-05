@@ -101,11 +101,11 @@ A definição do serviço fica em
 [`src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto`](./src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto)
 — idêntica à definição canônica do padrão aberto. O contrato completo (RPCs,
 enums e mensagens) está documentado em
-[Package Executor RPC Standard](../meta-platform-open-standard/specifications/package-executor-rpc.md).
+[Package Executor RPC Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/package-executor-rpc.md).
 
 A CLI `supervisor` (do `instance-supervisor.cli`) é um cliente dessa interface —
 veja o
-[Guia de Início Rápido](../../docs/GUIA-INICIO-RAPIDO.md#5-supervisionar-processos-supervisor).
+[Guia de Início Rápido](https://github.com/Meta-Platform/.github/blob/main/docs/GUIA-INICIO-RAPIDO.md#5-supervisionar-processos-supervisor).
 
 ## Modo de depuração (`pkg-exec-dbg`)
 
