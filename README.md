@@ -5,6 +5,56 @@
 
 O Executor de Pacotes da Plataforma é uma ferramenta robusta que permite a execução de pacotes da plataforma fora do ecossistema padrão, fornecendo controle completo sobre o ambiente de execução e integração com sistemas de supervisão.
 
+## Papel dentro da Meta Platform
+
+O **Package Executor** (`pkg-exec`) é o **executor isolado de pacotes** da Meta
+Platform (ver [portal](https://github.com/Meta-Platform) e
+[mapa de repositórios](https://github.com/Meta-Platform/.github/blob/main/docs/repository-map.md)).
+Ele é quem efetivamente transforma um package em uma **instância em execução**:
+cria um [Runtime Environment](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/concepts/runtime-environment.md)
+isolado, resolve as dependências por namespace, gera o plano de execução e o
+entrega ao **Task Executor**. É usado tanto diretamente (linha de comando) quanto
+por dentro do ecossistema (pelo `task-executor-machine.service` do
+[ecosystem-core](https://github.com/Meta-Platform/meta-platform-ecosystem-core-repository)).
+
+## Visão arquitetural
+
+```
+pkg-exec --package <caminho> ...
+   │
+   ├─ CreateScriptLoader        carrega libs de runtime do EssentialRepo
+   ├─ ListPackages              varre os repositórios instalados
+   ├─ BuildMetadataHierarchy    resolve dependências por namespace
+   │        ↓ grava
+   │   metadata-hierarchy.json  (no Runtime Environment: environments/<nome>-<hash>/)
+   ├─ TranslateMetadataHierarchyForExecutionParams
+   │        ↓ grava
+   │   execution-params.json
+   ├─ CreateTaskExecutorMachine
+   └─ CreateTasks → Task Executor instancia cada unidade (object loaders)
+           ↓
+       Package Instance  ──(opcional)──►  Supervisor Socket (gRPC/Unix)
+```
+
+As libs de runtime carregadas vêm do
+[essential-repository](https://github.com/Meta-Platform/meta-platform-essential-repository)
+e estão listadas em
+[`src/Configs/dependency-references.json`](./src/Configs/dependency-references.json).
+
+## Fluxo: metadata-hierarchy → execution-params → task-executor → instância
+
+1. **`metadata-hierarchy.json`** — grafo do package raiz + dependências resolvidas
+   por namespace (ver
+   [Dependency Resolution Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/dependency-resolution-standard.md)).
+2. **`execution-params.json`** — plano de execução traduzido do grafo: as unidades
+   (`objectLoaderType`) e suas ligações (ver
+   [Execution Params Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/packages/execution-params-standard.md)).
+3. **Task Executor** — executa o plano instanciando cada unidade via o **object
+   loader** correspondente (ver
+   [Environment Runtime Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/environment-runtime-standard.md)).
+4. **Package Instance** — o pacote no ar; considerado "funcionando" quando as
+   tasks estão `ACTIVE`/`FINISHED` sem `FAILURE`.
+
 ## Funcionalidades
 
 - Execução isolada de pacotes da plataforma
@@ -133,6 +183,77 @@ O arquivo [`src/Configs/dependency-references.json`](./src/Configs/dependency-re
 lista as libs do `essential-repository` (task executor, task loaders e metadata
 helpers) que o executor carrega via *script loader* para montar e rodar o plano
 de execução de um pacote.
+
+## Exemplos por tipo de package
+
+Todos usam os mesmos parâmetros base. As diferenças relevantes estão destacadas.
+
+### CLI (`.cli`)
+
+Use `--executableName` e repasse argumentos com `--commandLineArgs`:
+
+```bash
+pkg-exec --package "$REPO/Main.Module/Application.layer/repository-manager.cli" \
+         --startupJson "$REPO/Main.Module/Application.layer/repository-manager.cli/metadata/startup-params.json" \
+         --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
+         --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
+         --ecosystemData "$ECO" \
+         --executableName "repo" \
+         --commandLineArgs "list installed"
+```
+
+### Service (`.service`)
+
+Sobe um serviço de longa duração; normalmente com `--supervisorSocket` para
+permitir supervisão:
+
+```bash
+pkg-exec --package "$REPO/Main.Module/Services.layer/server-manager.service" \
+         --startupJson "$PKG/metadata/startup-params.json" \
+         --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
+         --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
+         --ecosystemData "$ECO" \
+         --supervisorSocket "./server-manager.sock"
+```
+
+### WebApp (`.webapp`)
+
+Sobe webgui + webservice sobre um servidor HTTP; com supervisão:
+
+```bash
+pkg-exec --package "$REPO/Apps.Module/Tools.layer/APIDesigner.group/api-designer.webapp" \
+         --startupJson "$PKG/metadata/startup-params.json" \
+         --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
+         --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
+         --ecosystemData "$ECO" \
+         --supervisorSocket "./api-designer.sock"
+```
+
+### App (`.app`)
+
+Aplicação/instância do ecossistema (pode subir vários serviços e endpoints):
+
+```bash
+pkg-exec --package "$REPO/Main.Module/Application.layer/ecosystem-instance-manager.app" \
+         --startupJson "$ECO/config-files/instance-manager.startup-params.json" \
+         --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
+         --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
+         --ecosystemData "$ECO" \
+         --supervisorSocket "./instance-manager.sock"
+```
+
+> Exemplos reais (sujeitos ao ajuste `--packagePath` → `--package`) em
+> [`script-tests/`](./script-tests/).
+
+## Troubleshooting
+
+| Sintoma | Causa provável / solução |
+|---------|--------------------------|
+| **Socket Unix inexistente** (cliente não conecta) | O socket só existe enquanto o processo roda. Confirme que o `pkg-exec` foi iniciado com `--supervisorSocket` e ainda está ativo; o arquivo fica no caminho passado (ou em `EcosystemData/supervisor-sockets/` quando rodando pelo ecossistema). |
+| **Supervisor socket ocupado / em uso** | Sobrou um arquivo de socket de uma execução anterior. Com prefixo `unix:` o executor remove o socket órfão antes do `bind`; sem ele, remova o arquivo manualmente ou use outro caminho. |
+| **Erro de parâmetro obrigatório** | `--package`, `--startupJson`, `--ecosystemData`, `--ecosystemDefault` e `--nodejsProjectDependencies` são obrigatórios. Além disso, `--ecosystemDefault` é validado explicitamente e, se `--awaitFirstConnectionWithLogStreaming` for `true`, `--supervisorSocket` passa a ser obrigatório. |
+| **`--package` vs `--packagePath`** | O parâmetro correto na versão atual é **`--package`**. Os scripts em `script-tests/` ainda usam o nome antigo `--packagePath`, que **não funciona** com o binário atual — ajuste antes de rodá-los. |
+| **Falhas de dependências Node.js** | `--nodejsProjectDependencies` deve apontar para um diretório que contenha `node_modules` com as dependências mínimas (em um ecossistema instalado: `EcosystemData/nodejs-dependencies`). As dependências do package são instaladas no `.dependencies/` do Runtime Environment pelo object loader `install-nodejs-package-dependencies`. |
 
 ## Contribuição
 
