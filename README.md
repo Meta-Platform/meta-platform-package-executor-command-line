@@ -104,11 +104,9 @@ Os parâmetros abaixo refletem as `option`s declaradas em
 | `--commandLineArgs` | Não | string | — | Argumentos repassados ao executável de linha de comando |
 | `--verbose` | Não | boolean | `false` | Habilita o log detalhado no terminal |
 
-> **Atenção (mudança de nome de parâmetro):** o parâmetro do caminho do pacote é
-> `--package` no código atual (`v0.0.26`). Os scripts em
-> [`script-tests/`](./script-tests/) ainda usam o nome antigo `--packagePath` e,
-> portanto, não funcionam com o binário atual sem ajuste.
-> `> TODO: confirmar` se os scripts devem ser atualizados para `--package`.
+> **Nome do parâmetro do pacote:** é **`--package`** (e não `--packagePath`, nome
+> antigo já corrigido nos scripts). Histórico em
+> [docs/known-issues.md](./docs/known-issues.md).
 
 ### Regras de validação observadas no código
 
@@ -166,8 +164,7 @@ de um pacote passo a passo.
 ## Exemplos em `script-tests/`
 
 A pasta [`script-tests/`](./script-tests/) reúne scripts de exemplo de execução
-de pacotes reais (sujeitos ao ajuste de `--packagePath` → `--package` citado
-acima):
+de pacotes reais (já usando `--package`):
 
 | Script | Demonstra |
 |--------|-----------|
@@ -242,8 +239,7 @@ pkg-exec --package "$REPO/Main.Module/Application.layer/ecosystem-instance-manag
          --supervisorSocket "./instance-manager.sock"
 ```
 
-> Exemplos reais (sujeitos ao ajuste `--packagePath` → `--package`) em
-> [`script-tests/`](./script-tests/).
+> Exemplos reais em [`script-tests/`](./script-tests/).
 
 ## Troubleshooting
 
@@ -252,7 +248,7 @@ pkg-exec --package "$REPO/Main.Module/Application.layer/ecosystem-instance-manag
 | **Socket Unix inexistente** (cliente não conecta) | O socket só existe enquanto o processo roda. Confirme que o `pkg-exec` foi iniciado com `--supervisorSocket` e ainda está ativo; o arquivo fica no caminho passado (ou em `EcosystemData/supervisor-sockets/` quando rodando pelo ecossistema). |
 | **Supervisor socket ocupado / em uso** | Sobrou um arquivo de socket de uma execução anterior. Com prefixo `unix:` o executor remove o socket órfão antes do `bind`; sem ele, remova o arquivo manualmente ou use outro caminho. |
 | **Erro de parâmetro obrigatório** | `--package`, `--startupJson`, `--ecosystemData`, `--ecosystemDefault` e `--nodejsProjectDependencies` são obrigatórios. Além disso, `--ecosystemDefault` é validado explicitamente e, se `--awaitFirstConnectionWithLogStreaming` for `true`, `--supervisorSocket` passa a ser obrigatório. |
-| **`--package` vs `--packagePath`** | O parâmetro correto na versão atual é **`--package`**. Os scripts em `script-tests/` ainda usam o nome antigo `--packagePath`, que **não funciona** com o binário atual — ajuste antes de rodá-los. |
+| **`--package` vs `--packagePath`** | O parâmetro correto é **`--package`**. `--packagePath` é o nome antigo (já corrigido nos `script-tests/`). Ver [docs/known-issues.md](./docs/known-issues.md). |
 | **Falhas de dependências Node.js** | `--nodejsProjectDependencies` deve apontar para um diretório que contenha `node_modules` com as dependências mínimas (em um ecossistema instalado: `EcosystemData/nodejs-dependencies`). As dependências do package são instaladas no `.dependencies/` do Runtime Environment pelo object loader `install-nodejs-package-dependencies`. |
 
 ## Contribuição
