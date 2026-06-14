@@ -147,9 +147,12 @@ um socket Unix e passa a expor operações de **supervisão** do processo:
 
 A definição do serviço fica em
 [`src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto`](./src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto)
-— idêntica à definição canônica do padrão aberto. O contrato completo (RPCs,
-enums e mensagens) está documentado em
-[Package Executor RPC Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/package-executor-rpc.md).
+— uma **cópia de implementação** derivada da fonte canônica
+[`proto/package_executor_rpc.proto`](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/proto/package_executor_rpc.proto)
+do Open Standard. Alterações no contrato devem começar no Open Standard e ser
+propagadas para esta cópia (sincronização manual, validada por `diff`). O contrato
+completo (RPCs, enums e mensagens) está documentado em
+[Package Executor RPC Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/package-executor-rpc-standard.md).
 
 A CLI `supervisor` (do `instance-supervisor.cli`) é um cliente dessa interface —
 veja o
