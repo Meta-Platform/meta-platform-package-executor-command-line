@@ -18,7 +18,8 @@ const CreateTaskExecutorMachine = async ({
         'application-instance'                : LoaderScript("application-instance.lib/src/ApplicationInstance.taskLoader"),
         'command-application'                 : LoaderScript("command-application.lib/src/CommandApplication.taskLoader"),
         'service-instance'                    : LoaderScript("service-instance.lib/src/ServiceInstance.taskLoader"),
-        'endpoint-instance'                   : LoaderScript("endpoint-instance.lib/src/EndpointInstance.taskLoader")
+        'endpoint-instance'                   : LoaderScript("endpoint-instance.lib/src/EndpointInstance.taskLoader"),
+        'desktop-window-instance'             : LoaderScript("desktop-window-instance.lib/src/DesktopWindowInstance.taskLoader")
     }
 
     return TaskExecutor({

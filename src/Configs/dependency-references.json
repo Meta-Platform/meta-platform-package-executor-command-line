@@ -6,6 +6,7 @@
     "EssentialRepo/Runtime.Module/EssentialTaskLoaders.layer/command-application.lib",
     "EssentialRepo/Runtime.Module/EssentialTaskLoaders.layer/service-instance.lib",
     "EssentialRepo/Runtime.Module/EssentialTaskLoaders.layer/endpoint-instance.lib",
+    "EssentialRepo/Runtime.Module/EssentialTaskLoaders.layer/desktop-window-instance.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/dependency-graph-builder.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/execution-params-generator.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/resolve-package-name.lib",
