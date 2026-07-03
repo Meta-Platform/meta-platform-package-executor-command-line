@@ -68,11 +68,15 @@ e estão listadas em
 
 ## Instalação
 
-Para instalar globalmente e disponibilizar os comandos `pkg-exec` e `pkg-exec-dbg` no seu sistema:
+Para instalar globalmente e disponibilizar os comandos `pkg-exec`, `pkg-exec-dbg`
+e o alias `package-executor` (mesmo binário do `pkg-exec`) no seu sistema:
 
 ```bash
 npm install -g package-executor
 ```
+
+> O `package.json` não declara o campo `engines`; o badge "node >= 22" reflete a
+> versão de Node.js usada no desenvolvimento, mas não é imposta na instalação.
 
 ## Uso Básico
 
@@ -99,10 +103,13 @@ Os parâmetros abaixo refletem as `option`s declaradas em
 | `--ecosystemDefault` | Sim | string | — | Caminho do arquivo JSON de parâmetros da plataforma |
 | `--nodejsProjectDependencies` | Sim | string | — | Caminho do projeto com as dependências Node.js (contém `node_modules`) |
 | `--awaitFirstConnectionWithLogStreaming` | Não | boolean | `false` | Aguarda a primeira conexão (com streaming de logs) antes de executar. Exige `--supervisorSocket`. |
-| `--supervisorSocket` | Não | string | — | Caminho onde será criado o socket de supervisão (gRPC) do processo |
+| `--supervisorSocket` | Não | string | — | Endereço do socket de supervisão (gRPC) do processo, no formato `unix:<caminho>` |
 | `--executableName` | Não | string | — | Nome do executável, para pacotes de linha de comando (CLI) |
 | `--commandLineArgs` | Não | string | — | Argumentos repassados ao executável de linha de comando |
 | `--verbose` | Não | boolean | `false` | Habilita o log detalhado no terminal |
+
+> Nas opções de string sem valor, o código declara literalmente `default: false`
+> (usado como "não informado"); a tabela representa isso como "—".
 
 > **Nome do parâmetro do pacote:** é **`--package`** (e não `--packagePath`, nome
 > antigo já corrigido nos scripts). Histórico em
@@ -145,6 +152,10 @@ um socket Unix e passa a expor operações de **supervisão** do processo:
 `StatusChangeNotification`, `GetStartupArguments` e `GetProcessInformation`
 (ver [`CreateBinaryInterfaceViaSocket.js`](./src/Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket.js)).
 
+> **Importante:** o valor de `--supervisorSocket` deve usar o prefixo `unix:`
+> (ex.: `unix:./meu-processo.sock`). Sem o prefixo, o gRPC interpreta o endereço
+> como `host:porta` e a supervisão simplesmente não acontece — sem erro visível.
+
 A definição do serviço fica em
 [`src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto`](./src/Helpers/CommunicationInterface/IDL/PackageExecutorRPCSpec.proto)
 — uma **cópia de implementação** derivada da fonte canônica
@@ -169,9 +180,14 @@ de um pacote passo a passo.
 A pasta [`script-tests/`](./script-tests/) reúne scripts de exemplo de execução
 de pacotes reais (já usando `--package`):
 
+> **Atenção:** na versão atual, esses scripts **falham como estão**: nenhum deles
+> passa `--ecosystemData` (parâmetro obrigatório) e todos usam `--supervisorSocket`
+> sem o prefixo `unix:`. Use-os como referência de estrutura, complementando com
+> os parâmetros obrigatórios — ver [docs/known-issues.md](./docs/known-issues.md).
+
 | Script | Demonstra |
 |--------|-----------|
-| [`exec-repository-manager-cli.sh`](./script-tests/exec-repository-manager-cli.sh) | Execução de uma CLI com `--supervisorSocket`. |
+| [`exec-repository-manager-cli.sh`](./script-tests/exec-repository-manager-cli.sh) | Execução do `repository-explorer.cli` com `--supervisorSocket`. |
 | [`exec-api-designer-local.sh`](./script-tests/exec-api-designer-local.sh) | Execução de uma `.webapp` local com supervisão. |
 | [`exec-api-designer-local-dbg.sh`](./script-tests/exec-api-designer-local-dbg.sh) | A mesma execução em modo de depuração (`pkg-exec-dbg`). |
 | [`command-application/run-command-line.sh`](./script-tests/command-application/run-command-line.sh) | Execução de CLI usando `--executableName` e `--commandLineArgs`. |
@@ -209,11 +225,11 @@ permitir supervisão:
 
 ```bash
 pkg-exec --package "$REPO/Main.Module/Services.layer/server-manager.service" \
-         --startupJson "$PKG/metadata/startup-params.json" \
+         --startupJson "$REPO/Main.Module/Services.layer/server-manager.service/metadata/startup-params.json" \
          --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
          --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
          --ecosystemData "$ECO" \
-         --supervisorSocket "./server-manager.sock"
+         --supervisorSocket "unix:./server-manager.sock"
 ```
 
 ### WebApp (`.webapp`)
@@ -222,11 +238,11 @@ Sobe webgui + webservice sobre um servidor HTTP; com supervisão:
 
 ```bash
 pkg-exec --package "$REPO/Apps.Module/Tools.layer/APIDesigner.group/api-designer.webapp" \
-         --startupJson "$PKG/metadata/startup-params.json" \
+         --startupJson "$REPO/Apps.Module/Tools.layer/APIDesigner.group/api-designer.webapp/metadata/startup-params.json" \
          --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
          --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
          --ecosystemData "$ECO" \
-         --supervisorSocket "./api-designer.sock"
+         --supervisorSocket "unix:./api-designer.sock"
 ```
 
 ### App (`.app`)
@@ -234,22 +250,24 @@ pkg-exec --package "$REPO/Apps.Module/Tools.layer/APIDesigner.group/api-designer
 Aplicação/instância do ecossistema (pode subir vários serviços e endpoints):
 
 ```bash
-pkg-exec --package "$REPO/Main.Module/Application.layer/ecosystem-instance-manager.app" \
+pkg-exec --package "$REPO/Main.Module/InstanceManagerApplication.layer/ecosystem-instance-manager.app" \
          --startupJson "$ECO/config-files/instance-manager.startup-params.json" \
          --ecosystemDefault "$ECO/config-files/ecosystem-defaults.json" \
          --nodejsProjectDependencies "$ECO/nodejs-dependencies" \
          --ecosystemData "$ECO" \
-         --supervisorSocket "./instance-manager.sock"
+         --supervisorSocket "unix:./instance-manager.sock"
 ```
 
-> Exemplos reais em [`script-tests/`](./script-tests/).
+> Exemplos reais em [`script-tests/`](./script-tests/) — mas veja o aviso na
+> seção [Exemplos em `script-tests/`](#exemplos-em-script-tests): os scripts
+> atuais não passam `--ecosystemData` e falham como estão.
 
 ## Troubleshooting
 
 | Sintoma | Causa provável / solução |
 |---------|--------------------------|
 | **Socket Unix inexistente** (cliente não conecta) | O socket só existe enquanto o processo roda. Confirme que o `pkg-exec` foi iniciado com `--supervisorSocket` e ainda está ativo; o arquivo fica no caminho passado (ou em `EcosystemData/supervisor-sockets/` quando rodando pelo ecossistema). |
-| **Supervisor socket ocupado / em uso** | Sobrou um arquivo de socket de uma execução anterior. Com prefixo `unix:` o executor remove o socket órfão antes do `bind`; sem ele, remova o arquivo manualmente ou use outro caminho. |
+| **Supervisor socket ocupado / em uso** | Sobrou um arquivo de socket de uma execução anterior. O executor só remove o arquivo `.sock` no **encerramento limpo** (`exit`, `SIGINT`, `SIGTERM`, exceção não capturada) — não há remoção antes do `bind`. Se o processo anterior morreu com `kill -9`, o socket órfão permanece e trava a nova execução: remova o arquivo `.sock` manualmente ou use outro caminho. |
 | **Erro de parâmetro obrigatório** | `--package`, `--startupJson`, `--ecosystemData`, `--ecosystemDefault` e `--nodejsProjectDependencies` são obrigatórios. Além disso, `--ecosystemDefault` é validado explicitamente e, se `--awaitFirstConnectionWithLogStreaming` for `true`, `--supervisorSocket` passa a ser obrigatório. |
 | **`--package` vs `--packagePath`** | O parâmetro correto é **`--package`**. `--packagePath` é o nome antigo (já corrigido nos `script-tests/`). Ver [docs/known-issues.md](./docs/known-issues.md). |
 | **Falhas de dependências Node.js** | `--nodejsProjectDependencies` deve apontar para um diretório que contenha `node_modules` com as dependências mínimas (em um ecossistema instalado: `EcosystemData/nodejs-dependencies`). As dependências do package são instaladas no `.dependencies/` do Runtime Environment pelo object loader `install-nodejs-package-dependencies`. |
