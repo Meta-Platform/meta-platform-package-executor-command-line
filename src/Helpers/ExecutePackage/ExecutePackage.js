@@ -73,9 +73,15 @@ const ExecutePackage = async ({
                 REPOS_CONF_EXTLIST_PKG_TYPE 
             })
     
+            // Injeta o ecosystem-defaults como BASE do startupParams: os {{VAR}}
+            // do boot.json de qualquer pacote passam a resolver a partir da
+            // config do ecossistema, sem precisar de literal no startup-params.
+            // O startup-params próprio do pacote sobrepõe (port/socket/serverName),
+            // e o merge por-nó do BuildMetadataHierarchy preserva o de cada nó.
+            // Este é o ponto de injeção UNIVERSAL: todo pacote sobe por aqui.
             const metadataHierarchy = await BuildMetadataHierarchy({
                 path: packagePath,
-                startupParams,
+                startupParams: { ...ecosystemDefaultParams, ...startupParams },
                 packageList,
                 REPOS_CONF_EXT_GROUP_DIR,
                 PKG_CONF_DIRNAME_METADATA
