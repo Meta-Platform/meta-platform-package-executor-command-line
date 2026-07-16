@@ -51,6 +51,15 @@ const ExecutePackage = async ({
             const BuildMetadataHierarchy = LoaderScript("dependency-graph-builder.lib/src/BuildMetadataHierarchy")
             const CreateEnvironment      = LoaderScript("environment-handler.lib/src/CreateEnvironment")
             const PrepareDataDir         = LoaderScript("environment-handler.lib/src/PrepareDataDir")
+            const AssertPackageTypeEnabled = LoaderScript("repository-utilities.lib/src/AssertPackageTypeEnabled")
+
+            // Gate de tipos (MPTL-18): recusa o pacote se o seu tipo não estiver habilitado
+            // pelos repositórios instalados (whitelist derivada), com mensagem clara.
+            AssertPackageTypeEnabled({
+                packagePath,
+                installDataDirPath: ecosystemData,
+                REPOS_CONF_FILENAME_REPOS_DATA
+            })
                 
             const GetRootNamespace = (metadataHierarchy) => {
                 const dependency = GetMetadataRootNode(metadataHierarchy)
