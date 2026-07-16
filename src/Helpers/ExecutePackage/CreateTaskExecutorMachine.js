@@ -1,5 +1,6 @@
 
 const CreateScriptLoader = require("../CreateScriptLoader")
+const GetRepositories = require("../GetRepositories")
 
 const CreateTaskExecutorMachine = async ({
     ecosystemData,
@@ -11,16 +12,16 @@ const CreateTaskExecutorMachine = async ({
         REPOS_CONF_FILENAME_REPOS_DATA,
         ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
     })
-    const TaskExecutor = LoaderScript("task-executor.lib/src/TaskExecutor") 
-    const taskLoaders = {
-        'install-nodejs-package-dependencies' : LoaderScript("install-nodejs-package-dependencies.taskLoader/src/InstallNodejsPackageDependencies.taskLoader"),
-        'nodejs-package'                      : LoaderScript("nodejs-package.taskLoader/src/NodeJSPackage.taskLoader"),
-        'application-instance'                : LoaderScript("application-instance.taskLoader/src/ApplicationInstance.taskLoader"),
-        'command-application'                 : LoaderScript("command-application.taskLoader/src/CommandApplication.taskLoader"),
-        'service-instance'                    : LoaderScript("service-instance.taskLoader/src/ServiceInstance.taskLoader"),
-        'endpoint-instance'                   : LoaderScript("endpoint-instance.taskLoader/src/EndpointInstance.taskLoader"),
-        'desktop-window-instance'             : LoaderScript("desktop-window-instance.taskLoader/src/DesktopWindowInstance.taskLoader")
-    }
+    const TaskExecutor      = LoaderScript("task-executor.lib/src/TaskExecutor")
+    const CreateTaskLoaders = LoaderScript("taskloader-registry.lib/src/CreateTaskLoaders")
+
+    // Descoberta dinâmica: monta o mapa de object loaders a partir dos
+    // taskloaders.json dos repositórios instalados (em vez de um mapa hard-coded).
+    const repositoriesData = await GetRepositories({
+        installDataDirPath: ecosystemData,
+        REPOS_CONF_FILENAME_REPOS_DATA
+    })
+    const taskLoaders = CreateTaskLoaders({ repositoriesData })
 
     return TaskExecutor({
         taskLoaders

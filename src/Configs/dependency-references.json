@@ -1,12 +1,6 @@
 [
     "EssentialRepo/Runtime.Module/Executor.layer/task-executor.lib",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/install-nodejs-package-dependencies.taskLoader",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/nodejs-package.taskLoader",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/application-instance.taskLoader",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/command-application.taskLoader",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/service-instance.taskLoader",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/endpoint-instance.taskLoader",
-    "EssentialRepo/Taskloaders.Module/Loaders.layer/desktop-window-instance.taskLoader",
+    "EssentialRepo/Taskloaders.Module/Registry.layer/taskloader-registry.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/dependency-graph-builder.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/execution-params-generator.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/resolve-package-name.lib",
