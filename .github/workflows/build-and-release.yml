@@ -8,68 +8,35 @@ on:
       - 'package.json'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18.x]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 22.x
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
-      - name: Install PKG globally
-        run: npm install -g pkg
-      - name: Get version and name
-        run: |
-          echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-          echo "NAME=$(node -p "require('./package.json').name")" >> $GITHUB_ENV
-      - name: Export version and name to file
-        run: |
-          echo "VERSION=${{ env.VERSION }}" > env_vars.txt
-          echo "NAME=${{ env.NAME }}" >> env_vars.txt
-      - name: Upload environment variables
-        uses: actions/upload-artifact@v3
-        with:
-          name: env_vars
-          path: env_vars.txt
+      - name: Get version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+      # O nome do asset segue o nome do REPOSITÓRIO, não o do package.json:
+      # o pacote npm chama-se `package-executor`, mas as 16 releases publicadas
+      # usam meta-platform-package-executor-command-line-*, e é esse nome que o
+      # instalador grava em EcosystemData/binaries/.
+      - name: Set binary name
+        run: echo "BINARY=meta-platform-package-executor-command-line-${{ env.VERSION }}-preview-linux-x64" >> $GITHUB_ENV
       - name: Build binary with pkg
-        run: |
-          pkg ./src/Executables/exec-pkg.js --targets node18-linux-x64 --output ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
-          path: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
-
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: Download environment variables
-        uses: actions/download-artifact@v3
-        with:
-          name: env_vars
-      - name: Import environment variables
-        run: |
-          echo "$(cat env_vars.txt)" >> $GITHUB_ENV
-      - name: Download artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
-      - name: Create or set tag
+        run: npx --yes @yao-pkg/pkg ./src/Executables/exec-pkg.js --targets node22-linux-x64 --output ${{ env.BINARY }}
+      - name: Create tag
         run: |
           git config --global user.email "kadisk.shark@gmail.com"
           git config --global user.name "Kaio Cezar"
@@ -80,12 +47,8 @@ jobs:
           else
             echo "Tag ${{ env.VERSION }} already exists."
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          files: ${{ github.workspace }}/${{ env.NAME }}-${{ env.VERSION }}-preview-linux-x64
+          files: ${{ env.BINARY }}
           tag_name: ${{ env.VERSION }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
