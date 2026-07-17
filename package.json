@@ -7,6 +7,9 @@
     "pkg-exec": "src/Executables/exec-pkg.js",
     "pkg-exec-dbg": "src/ExecutablesDebug/exec-pkg-dbg.js"
   },
+  "scripts": {
+    "build": "npx --yes @yao-pkg/pkg ./src/Executables/exec-pkg.js --targets node22-linux-x64 --output meta-platform-package-executor-command-line-0.0.26-preview-linux-x64"
+  },
   "author": "kadisk.shark@gmail.com",
   "license": "BSD-3-Clause",
   "dependencies": {

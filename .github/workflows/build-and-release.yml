@@ -36,18 +36,29 @@ jobs:
         run: echo "BINARY=meta-platform-package-executor-command-line-${{ env.VERSION }}-preview-linux-x64" >> $GITHUB_ENV
       - name: Build binary with pkg
         run: npx --yes @yao-pkg/pkg ./src/Executables/exec-pkg.js --targets node22-linux-x64 --output ${{ env.BINARY }}
+      # O gatilho é qualquer mudança no package.json, não só a da versão. Sem esta
+      # trava, um commit que mexesse noutro campo redispararia a Action e o
+      # action-gh-release regravaria a release da versão já publicada.
+      # Versão só anda para frente: para publicar, suba a versão no package.json.
+      - name: Check tag
+        id: tag
+        run: |
+          git fetch --tags
+          if git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+            echo "::notice::Versão ${{ env.VERSION }} já publicada — nada a fazer."
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
       - name: Create tag
+        if: steps.tag.outputs.exists == 'false'
         run: |
           git config --global user.email "kadisk.shark@gmail.com"
           git config --global user.name "Kaio Cezar"
-          git fetch --tags
-          if ! git rev-parse ${{ env.VERSION }} >/dev/null 2>&1; then
-            git tag -a ${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
-            git push origin ${{ env.VERSION }}
-          else
-            echo "Tag ${{ env.VERSION }} already exists."
-          fi
+          git tag -a ${{ env.VERSION }} -m "Release ${{ env.VERSION }}"
+          git push origin ${{ env.VERSION }}
       - name: Create Release
+        if: steps.tag.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           files: ${{ env.BINARY }}
