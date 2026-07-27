@@ -43,6 +43,15 @@ const ExecutePackage = async ({
                 ECOSYSTEMDATA_CONF_DIRNAME_DOWNLOADED_REPOSITORIES
             })
 
+            // Recursos declarados (socket-params/storage-params). Carregado de
+            // forma tolerante porque o binário e o EssentialRepo instalado são
+            // atualizados em momentos diferentes: com um repo anterior à lib, o
+            // executor continua subindo pacotes — só não resolve recurso, e o
+            // caminho literal do startup-params.json segue valendo.
+            const _TryLoad = (uri) => { try { return LoaderScript(uri) } catch(e) { return undefined } }
+            const ApplyResourceParamsToHierarchy = _TryLoad("resource-params-handler.lib/src/ApplyResourceParamsToHierarchy")
+            const EnsureResources                = _TryLoad("resource-params-handler.lib/src/EnsureResources")
+
             const WriteObjectToFile      = LoaderScript("json-file-utilities.lib/src/WriteObjectToFile")
             const ResolvePackageName     = LoaderScript("resolve-package-name.lib/src/ResolvePackageName")
             const GetMetadataRootNode    = LoaderScript("metadata-hierarchy-handler.lib/src/GetMetadataRootNode")
@@ -88,13 +97,48 @@ const ExecutePackage = async ({
             // O startup-params próprio do pacote sobrepõe (port/socket/serverName),
             // e o merge por-nó do BuildMetadataHierarchy preserva o de cada nó.
             // Este é o ponto de injeção UNIVERSAL: todo pacote sobe por aqui.
-            const metadataHierarchy = await BuildMetadataHierarchy({
+            // Recursos declarados são resolvidos DEPOIS do build: o merge por-nó
+            // acima faz o startup-params.json do pacote sobrepor a base injetada,
+            // então o recurso só é fonte da verdade se vier por último. As pastas
+            // são materializadas aqui, antes de qualquer tarefa começar.
+            const _ResolveDeclaredResources = (metadataHierarchy) => {
+
+                if(!ApplyResourceParamsToHierarchy) return metadataHierarchy
+
+                const {
+                    ECOSYSTEMDATA_CONF_DIRNAME_UNIX_SOCKET_DIR,
+                    ECOSYSTEMDATA_CONF_DIRNAME_SUPERVISOR_UNIX_SOCKET_DIR,
+                    ECOSYSTEMDATA_CONF_DIRNAME_STORAGE_DIR
+                } = ecosystemDefaultParams
+
+                const resolved = ApplyResourceParamsToHierarchy({
+                    metadataHierarchy,
+                    installDataDirPath: ecosystemData,
+                    ECOSYSTEMDATA_CONF_DIRNAME_UNIX_SOCKET_DIR,
+                    ECOSYSTEMDATA_CONF_DIRNAME_SUPERVISOR_UNIX_SOCKET_DIR,
+                    ECOSYSTEMDATA_CONF_DIRNAME_STORAGE_DIR
+                })
+
+                EnsureResources(resolved.resources)
+
+                resolved.resources
+                    .filter(({ owner }) => owner)
+                    .forEach(({ kind, parameter, path }) => loggerEmitter && loggerEmitter.emit("log", {
+                        sourceName: "ExecutePackage",
+                        type: "info",
+                        message: `${kind} ${parameter} → ${path}`
+                    }))
+
+                return resolved.metadataHierarchy
+            }
+
+            const metadataHierarchy = _ResolveDeclaredResources(await BuildMetadataHierarchy({
                 path: packagePath,
                 startupParams: { ...ecosystemDefaultParams, ...startupParams },
                 packageList,
                 REPOS_CONF_EXT_GROUP_DIR,
                 PKG_CONF_DIRNAME_METADATA
-            })
+            }))
         
             const namespace       = GetRootNamespace(metadataHierarchy)
             const packageName     = ResolvePackageName(namespace)
