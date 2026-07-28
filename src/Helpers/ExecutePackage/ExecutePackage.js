@@ -50,6 +50,7 @@ const ExecutePackage = async ({
             const _TryLoad = (uri) => { try { return LoaderScript(uri) } catch(e) { return undefined } }
             const ApplyResourceParamsToHierarchy = _TryLoad("resource-params-handler.lib/src/ApplyResourceParamsToHierarchy")
             const EnsureResources                = _TryLoad("resource-params-handler.lib/src/EnsureResources")
+            const CollisionDetector              = _TryLoad("resource-params-handler.lib/src/DetectResourceParamCollisions")
 
             const WriteObjectToFile      = LoaderScript("json-file-utilities.lib/src/WriteObjectToFile")
             const ResolvePackageName     = LoaderScript("resolve-package-name.lib/src/ResolvePackageName")
@@ -123,6 +124,15 @@ const ExecutePackage = async ({
                 resolved.resources
                     .filter(({ owner }) => owner)
                     .forEach(({ kind, parameter, path }) => Log.info("ExecutePackage", `${kind} ${parameter} → ${path}`))
+
+                // Colisão de nome (VDRP-233): o recurso declarado substituiu um
+                // valor que o parâmetro já tinha. Aviso, e não recusa: quem executa
+                // um pacote precisa saber que o caminho mudou debaixo dele, mas
+                // negar a execução aqui não devolve o caminho antigo a ninguém.
+                // A recusa é do provisionamento, onde o nome ainda pode mudar.
+                if(CollisionDetector)
+                    (resolved.collisions || []).forEach((collision) =>
+                        Log.info("ExecutePackage", `COLISÃO — ${CollisionDetector.DescribeCollision(collision)}`))
 
                 return resolved.metadataHierarchy
             }
