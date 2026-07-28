@@ -1,7 +1,6 @@
 const { basename, resolve } = require("path")
 
 const CreateScriptLoader = require("./CreateScriptLoader")
-const PrintDataLog       = require("./PrintDataLog")
 
 /*
  * Instala o `globalThis.Log` a partir da `logger.lib` do EssentialRepo
@@ -57,11 +56,9 @@ const InstallLogger = async ({
     } catch (error) {
 
         if (verbose) {
-            PrintDataLog({
-                sourceName : "InstallLogger",
-                type       : "warning",
-                message    : `Logger global indisponível (${error.message || error}) — a execução segue sem ele`
-            })
+            /* Aqui o `Log` não existe (é justamente o que falhou) e `console`
+             * pode já estar embrulhado — resta o stdout direto. */
+            process.stdout.write(`[InstallLogger] logger global indisponível (${error.message || error}) — a execução segue sem ele\n`)
         }
 
         return null
