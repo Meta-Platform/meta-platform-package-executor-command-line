@@ -5,6 +5,7 @@ const ExecutePackage                 = require("../Helpers/ExecutePackage")
 const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket")
 const PrintDataLog                   = require("../Helpers/PrintDataLog")
 const ReadJsonFile                   = require("../Helpers/ReadJsonFile")
+const InstallLogger                  = require("../Helpers/InstallLogger")
 
 const ConvertInstanceArgsToArgsResponse = (instanceArguments) => {
     
@@ -50,8 +51,22 @@ const ExecutePlatformPackageCommand = async ({
         REPOS_CONF_FILENAME_REPOS_DATA
      } = ecosystemDefaultParams
     
-    process.env.EXTERNAL_NODE_MODULES_PATH = 
+    process.env.EXTERNAL_NODE_MODULES_PATH =
         resolve(nodejsProjectDependencies, "node_modules")
+
+    /*
+     * Antes de qualquer execução: o package-executor é o ponto por onde TODO
+     * pacote sobe, então é aqui que `globalThis.Log` passa a existir para o
+     * processo inteiro. Depende do EXTERNAL_NODE_MODULES_PATH acima (o sink de
+     * terminal resolve o `colors` por ele) e precisa vir antes da interface de
+     * supervisão, que também embrulha o `console.log`.
+     */
+    await InstallLogger({
+        packagePath : package,
+        ecosystemData,
+        ecosystemDefaultParams,
+        verbose
+    })
 
     const startupParams  = ReadJsonFile(startupJson)
 
