@@ -1,6 +1,4 @@
 const { resolve } = require("path")
-const EventEmitter = require('events')
-
 const ExecutePackage                 = require("../Helpers/ExecutePackage")
 const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket")
 const PrintDataLog                   = require("../Helpers/PrintDataLog")
@@ -36,9 +34,6 @@ const ExecutePlatformPackageCommand = async ({
     commandLineArgs,
     verbose
 }) => {
-    const loggerEmitter = new EventEmitter()
-    if(verbose) loggerEmitter.on("log", (dataLog) => PrintDataLog(dataLog))
-    
     if(!ecosystemDefault)
         throw "O parâmetro ecosystemDefault é obrigatório"
 
@@ -77,7 +72,6 @@ const ExecutePlatformPackageCommand = async ({
             executableName,
             startupParams,
             ecosystemDefaultParams,
-            loggerEmitter,
             onChangeTaskList: (taskList) => comInterface && comInterface.UpdateTaskList(taskList),
             ecosystemData
         })

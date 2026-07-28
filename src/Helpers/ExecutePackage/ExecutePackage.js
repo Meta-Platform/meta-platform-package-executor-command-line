@@ -17,7 +17,6 @@ const ExecutePackage = async ({
     executableName,
     startupParams,
     ecosystemData,
-    loggerEmitter,
     onChangeTaskList,
     ecosystemDefaultParams
 }) => 
@@ -123,11 +122,7 @@ const ExecutePackage = async ({
 
                 resolved.resources
                     .filter(({ owner }) => owner)
-                    .forEach(({ kind, parameter, path }) => loggerEmitter && loggerEmitter.emit("log", {
-                        sourceName: "ExecutePackage",
-                        type: "info",
-                        message: `${kind} ${parameter} → ${path}`
-                    }))
+                    .forEach(({ kind, parameter, path }) => Log.info("ExecutePackage", `${kind} ${parameter} → ${path}`))
 
                 return resolved.metadataHierarchy
             }
@@ -148,14 +143,12 @@ const ExecutePackage = async ({
     
             const environmentPath = await CreateEnvironment({
                 environmentName, 
-                localPath,
-                loggerEmitter
+                localPath
             })
         
             await PrepareDataDir({
                 environmentPath, 
-                EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES, 
-                loggerEmitter
+                EXECUTIONDATA_CONF_DIRNAME_DEPENDENCIES
             })
     
             await WriteObjectToFile(join(environmentPath, ECOSYSTEMDATA_CONF_FILENAME_PKG_GRAPH_DATA), metadataHierarchy)
@@ -202,11 +195,7 @@ const ExecutePackage = async ({
     
             startupTaskExecutorMachine
                 .AddTaskStatusListener(({taskId, status, objectLoaderType}) => {
-                    loggerEmitter && loggerEmitter.emit("log", {
-                        sourceName: "TaskExecutor",
-                        type: "info",
-                        message: GetFormattedMessage(taskId, status, objectLoaderType)
-                    })
+                    Log.info("TaskExecutor", GetFormattedMessage(taskId, status, objectLoaderType))
                     onChangeTaskList && onChangeTaskList(startupTaskExecutorMachine.ListTasks())
                     if(
                         TaskStatusTypes.ACTIVE === status ||
@@ -219,11 +208,7 @@ const ExecutePackage = async ({
             const isolatedExecutionParameters = GetIsolateExecutionParameters(applicationExecutionParams, {environmentPath})
             startupTaskExecutorMachine.CreateTasks(isolatedExecutionParameters)
         }catch(e){
-            loggerEmitter && loggerEmitter.emit("log", {
-                sourceName: "ExecutePackage",
-                type: "error",
-                message: e
-            })
+            Log.error("ExecutePackage", e)
 
             throw e
         }
