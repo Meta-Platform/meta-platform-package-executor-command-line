@@ -99,7 +99,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 			  })
 			  callback(null, { tasksList: _taskList })
 		}catch(e){
-			console.log(e)
+			Log.error("CreateBinaryInterfaceViaSocket", e)
 		}
 	  }
 
@@ -177,7 +177,7 @@ const CreateBinaryInterfaceViaSocket = async ({
 		grpc.ServerCredentials.createInsecure(),
 		(error) => {
 			if (error) {
-				console.error(error)
+				Log.error("CreateBinaryInterfaceViaSocket", error)
 				return
 			}
 		})

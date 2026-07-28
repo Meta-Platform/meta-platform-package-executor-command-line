@@ -20,7 +20,7 @@ const SetupSocketFileRemovalOnShutdown = (socketFilePath) => {
 		process.exit(0)
 	})
 	process.on('uncaughtException', (err) => {
-		console.error('Houve uma exceção não capturada:', err)
+		Log.fatal("SetupSocketFileRemovalOnShutdown", 'Houve uma exceção não capturada:', err)
 		_CleanUpSocketFileSync()
 		process.exit(1)
 	})

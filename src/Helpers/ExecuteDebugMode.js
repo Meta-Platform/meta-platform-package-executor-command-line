@@ -13,7 +13,7 @@ const ExecuteDebugMode = (scriptPath, args) => {
     })
 
     debugProcess.on('error', (err) => {
-        console.error(`Falha ao iniciar o processo de depuração: ${err.message}`)
+        Log.error("ExecuteDebugMode", `Falha ao iniciar o processo de depuração: ${err.message}`)
     })
 
 }
