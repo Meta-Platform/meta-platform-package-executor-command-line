@@ -6,6 +6,7 @@
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/resolve-package-name.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/metadata-hierarchy-handler.lib",
     "EssentialRepo/Runtime.Module/MetadataHelpers.layer/resource-params-handler.lib",
+    "EssentialRepo/Commons.Module/Libraries.layer/module-resolution.lib",
     "EssentialRepo/Commons.Module/Libraries.layer/logger.lib",
     "EssentialRepo/Commons.Module/Libraries.layer/json-file-utilities.lib",
     "EssentialRepo/Commons.Module/PlatformLibraries.layer/repository-utilities.lib",

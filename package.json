@@ -1,6 +1,6 @@
 {
   "name": "package-executor",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "description": "Executor de Pacotes da Plataforma",
   "bin": {
     "package-executor": "src/Executables/exec-pkg.js",

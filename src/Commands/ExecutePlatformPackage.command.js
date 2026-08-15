@@ -3,6 +3,7 @@ const ExecutePackage                 = require("../Helpers/ExecutePackage")
 const CreateBinaryInterfaceViaSocket = require("../Helpers/CommunicationInterface/CreateBinaryInterfaceViaSocket")
 const ReadJsonFile                   = require("../Helpers/ReadJsonFile")
 const InstallLogger                  = require("../Helpers/InstallLogger")
+const InstallTypeScriptResolution    = require("../Helpers/InstallTypeScriptResolution")
 
 const ConvertInstanceArgsToArgsResponse = (instanceArguments) => {
     
@@ -47,6 +48,17 @@ const ExecutePlatformPackageCommand = async ({
     
     process.env.EXTERNAL_NODE_MODULES_PATH =
         resolve(nodejsProjectDependencies, "node_modules")
+
+    /*
+     * Primeira coisa a acontecer com o repositório instalado: a partir daqui
+     * `require` sem extensão encontra `.ts`. Precede o logger porque a própria
+     * `logger.lib` pode ser TypeScript. Ver source-language-standard.md.
+     */
+    await InstallTypeScriptResolution({
+        ecosystemData,
+        ecosystemDefaultParams,
+        verbose
+    })
 
     /*
      * Antes de qualquer execução: o package-executor é o ponto por onde TODO
