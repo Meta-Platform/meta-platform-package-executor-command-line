@@ -77,6 +77,11 @@ npm install -g package-executor
 
 > O `package.json` não declara o campo `engines`; o badge "node >= 22" reflete a
 > versão de Node.js usada no desenvolvimento, mas não é imposta na instalação.
+>
+> Na prática o piso é **Node ≥ 22.18**: os packages da plataforma são escritos em
+> TypeScript e o executor os carrega por apagamento de tipos do próprio Node —
+> sem transpilador e sem passo de build. Abaixo dessa versão um `.ts` não carrega.
+> Ver [Source Language Standard](https://github.com/Meta-Platform/meta-platform-open-standard/blob/main/specifications/source-language-standard.md).
 
 ## Uso Básico
 
