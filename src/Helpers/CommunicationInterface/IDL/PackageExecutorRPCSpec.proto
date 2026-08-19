@@ -20,15 +20,12 @@ service PackageExecutorRPCService {
 
 message EventResponse { string event_message = 1; }
 
-enum ExecutionStatus {
-  UNKNOWN = 0;
-  WAITING_FOR_FIRST_CONNECTION = 1;
-  STARTING = 2;
-  RUNNING = 3;
-  ERROR = 4;
-}
-
 enum TaskStatus {
+  // Exigência do proto3: o primeiro valor de todo enum é 0, e é o default de um
+  // campo ausente. Não é um estado que o executor emita — nenhuma tarefa nasce
+  // nele —, por isso não aparece no ciclo de vida da tarefa. Os valores 1 a 9 já
+  // estavam em uso e permanecem com o mesmo número.
+  TASK_STATUS_UNSPECIFIED = 0;
   AWAITING_PRECONDITIONS = 1;
   PRECONDITIONS_COMPLETED = 2;
   PREPPED_TO_START = 3;
@@ -40,7 +37,24 @@ enum TaskStatus {
   TERMINATED = 9;
 }
 
-message ExecutionStatusResponse { ExecutionStatus status = 1; }
+message ExecutionStatusResponse {
+  // Valor de enum vive no escopo que CONTÉM o enum, não dentro dele. `STARTING`
+  // existe nos dois enums deste contrato: no escopo do package eles colidiriam,
+  // e nenhum compilador estrito aceitaria o arquivo. Aninhar `ExecutionStatus`
+  // na única mensagem que o usa é o recurso que o protobuf oferece para separar
+  // esses escopos. Os NOMES dos valores não mudam — há clientes que leem o nome
+  // do valor (`enums: String` do `@grpc/proto-loader`), e renomear qualquer um
+  // deles os quebraria. Os números também não mudam: nada muda na transmissão.
+  enum ExecutionStatus {
+    UNKNOWN = 0;
+    WAITING_FOR_FIRST_CONNECTION = 1;
+    STARTING = 2;
+    RUNNING = 3;
+    ERROR = 4;
+  }
+
+  ExecutionStatus status = 1;
+}
 
 message TaskListResponse { repeated Task tasksList = 1; }
 
