@@ -26,13 +26,28 @@ const SetupSocketFileRemovalOnShutdown = (socketFilePath) => {
 	}
 
 	process.on('exit', _CleanUpSocketFileSync)
-	process.on('SIGINT', () => {
-		_CleanUpSocketFileSync()
-		process.exit(0)
-	})
-	process.on('SIGTERM', () => {
-		_CleanUpSocketFileSync()
-		process.exit(0)
+
+	/*
+	 * TODO sinal que TERMINA o processo por padrão precisa estar aqui, senão o
+	 * arquivo de socket sobrevive ao dono e vira lixo permanente no diretório de
+	 * supervisão — cada órfão custa uma tentativa de reconexão a cada 4 s, para
+	 * sempre, em todo processo que supervisiona o host.
+	 *
+	 * SIGHUP era o buraco mais fácil de cair: é o que chega quando o terminal
+	 * que lançou a instância fecha, e a ação padrão dele é matar o processo sem
+	 * passar por `exit`. SIGQUIT vem do Ctrl-\.
+	 *
+	 * O que continua fora do alcance de qualquer processo é SIGKILL, o OOM
+	 * killer e a queda da máquina. Para esses, a limpeza é do supervisor:
+	 * `CreateOrphanSocketReconciler`, no instance-supervisor.service.
+	 */
+	const SINAIS_DE_ENCERRAMENTO = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGQUIT']
+
+	SINAIS_DE_ENCERRAMENTO.forEach((sinal) => {
+		process.on(sinal, () => {
+			_CleanUpSocketFileSync()
+			process.exit(0)
+		})
 	})
 	/*
 	 * Handler de última instância: a limpeza do socket é a obrigação deste
